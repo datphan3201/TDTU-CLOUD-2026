@@ -1,0 +1,4 @@
+Flask==3.1.0
+gunicorn==23.0.0
+# TODO APP-02: thêm driver MariaDB/MySQL khi triển khai /students-db.
+# TODO AUTH-01: thêm thư viện JWT có hỗ trợ RS256 và HTTP client khi triển khai /secure.

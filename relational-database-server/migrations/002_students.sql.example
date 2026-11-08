@@ -1,0 +1,8 @@
+-- TODO DB-01: sao chép thành 002_students.sql và hoàn thành.
+-- Chạy migration theo README, kể cả khi database-data đã tồn tại.
+CREATE DATABASE IF NOT EXISTS studentdb;
+USE studentdb;
+-- CREATE TABLE students (...);
+-- Các cột: id, student_id VARCHAR(10), fullname VARCHAR(100), dob DATE, major VARCHAR(50).
+-- INSERT ít nhất 3 bản ghi.
+-- GRANT SELECT trên studentdb.students cho DB_USER (khớp .env).

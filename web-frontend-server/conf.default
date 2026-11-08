@@ -1,0 +1,28 @@
+server {
+    listen 80;
+    server_name _;
+    root /usr/share/nginx/html;
+    index index.html;
+    add_header X-Web-Instance $hostname always;
+
+    location / { try_files $uri $uri/ =404; }
+    location ^~ /blog/ {
+        alias /usr/share/nginx/html/blog/;
+        index index.html;
+        autoindex off;
+    }
+    location = /health {
+        access_log off;
+        default_type text/plain;
+        return 200 "ok\n";
+    }
+
+    # NGINX Exporter đọc stub_status trên cổng chỉ dùng nội bộ.
+}
+
+server {
+    listen 8082;
+    server_name _;
+    location = /stub_status { stub_status; access_log off; }
+    location / { return 404; }
+}

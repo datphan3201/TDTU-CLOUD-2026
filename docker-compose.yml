@@ -1,0 +1,212 @@
+name: myminicloud
+
+x-common: &common
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options:
+      max-size: "10m"
+      max-file: "3"
+
+networks:
+  cloud-net:
+    name: cloud-net
+    ipam:
+      config:
+        - subnet: 10.10.10.0/24
+
+volumes:
+  database-data:
+  keycloak-data:
+  object-data:
+  prometheus-data:
+  grafana-data:
+
+services:
+  web-frontend-server:
+    <<: *common
+    build: ./web-frontend-server
+    image: ${DOCKERHUB_USERNAME:-myminicloud}/myminicloud-web:${IMAGE_TAG:-dev}
+    container_name: web-frontend-server
+    ports:
+      - "${LOCAL_BIND_ADDRESS:-127.0.0.1}:8080:80"
+    networks:
+      cloud-net:
+        ipv4_address: 10.10.10.10
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, "http://127.0.0.1/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  application-backend-server:
+    <<: *common
+    build: ./application-backend-server
+    image: ${DOCKERHUB_USERNAME:-myminicloud}/myminicloud-app:${IMAGE_TAG:-dev}
+    container_name: application-backend-server
+    ports:
+      - "${LOCAL_BIND_ADDRESS:-127.0.0.1}:8085:8081"
+    environment:
+      DB_HOST: relational-database-server
+      DB_PORT: "3306"
+      DB_NAME: ${DB_NAME:-minicloud}
+      DB_USER: ${DB_USER:-minicloud_app}
+      DB_PASSWORD: ${DB_PASSWORD:?Tao .env tu .env.example}
+      STUDENT_DB_NAME: studentdb
+      OIDC_ISSUER: "${PUBLIC_BASE_URL:-http://localhost}/auth/realms/realm_${STUDENT_ID:-CHANGE_ME}"
+      OIDC_JWKS_URL: "http://authentication-identity-server:8080/auth/realms/realm_${STUDENT_ID:-CHANGE_ME}/protocol/openid-connect/certs"
+      OIDC_AUDIENCE: flask-app
+    networks:
+      cloud-net:
+        ipv4_address: 10.10.10.20
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8081/health', timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  relational-database-server:
+    <<: *common
+    image: mariadb:11.4
+    container_name: relational-database-server
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Tao .env tu .env.example}
+      MARIADB_DATABASE: ${DB_NAME:-minicloud}
+      MARIADB_USER: ${DB_USER:-minicloud_app}
+      MARIADB_PASSWORD: ${DB_PASSWORD:?Tao .env tu .env.example}
+    ports:
+      - "${LOCAL_BIND_ADDRESS:-127.0.0.1}:3306:3306"
+    volumes:
+      - database-data:/var/lib/mysql
+      - ./relational-database-server/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      cloud-net:
+        ipv4_address: 10.10.10.21
+    healthcheck:
+      test: [CMD, healthcheck.sh, --connect, --innodb_initialized]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
+
+  authentication-identity-server:
+    <<: *common
+    image: quay.io/keycloak/keycloak:26.0.8
+    container_name: authentication-identity-server
+    command: [start-dev, --import-realm]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN:-admin}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:?Tao .env tu .env.example}
+      KC_HOSTNAME: "${PUBLIC_BASE_URL:-http://localhost}/auth"
+      KC_HTTP_RELATIVE_PATH: /auth
+      KC_PROXY_HEADERS: xforwarded
+      KC_HTTP_ENABLED: "true"
+    ports:
+      - "${LOCAL_BIND_ADDRESS:-127.0.0.1}:8081:8080"
+    volumes:
+      - keycloak-data:/opt/keycloak/data
+      - ./authentication-identity-server/import:/opt/keycloak/data/import:ro
+    networks:
+      cloud-net:
+        ipv4_address: 10.10.10.30
+
+  object-storage-server:
+    <<: *common
+    # Ghim bản lab có Console quản lý bucket theo đề; xem README của storage.
+    image: minio/minio:RELEASE.2025-04-22T22-12-26Z
+    container_name: object-storage-server
+    command: [server, /data, --console-address, ":9001"]
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?Tao .env tu .env.example}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?Tao .env tu .env.example}
+    ports:
+      - "${LOCAL_BIND_ADDRESS:-127.0.0.1}:9000:9000"
+      - "${LOCAL_BIND_ADDRESS:-127.0.0.1}:9001:9001"
+    volumes:
+      - object-data:/data
+    networks:
+      cloud-net:
+        ipv4_address: 10.10.10.40
+
+  internal-dns-server:
+    <<: *common
+    image: internetsystemsconsortium/bind9:9.20
+    container_name: internal-dns-server
+    ports:
+      - "${LOCAL_BIND_ADDRESS:-127.0.0.1}:1053:53/udp"
+      - "${LOCAL_BIND_ADDRESS:-127.0.0.1}:1053:53/tcp"
+    volumes:
+      - ./internal-dns-server/named.conf:/etc/bind/named.conf:ro
+      - ./internal-dns-server/db.cloud.local:/etc/bind/db.cloud.local:ro
+    networks:
+      cloud-net:
+        ipv4_address: 10.10.10.53
+
+  monitoring-node-exporter-server:
+    <<: *common
+    image: prom/node-exporter:v1.8.2
+    container_name: monitoring-node-exporter-server
+    command:
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+      - --path.rootfs=/host/root
+    pid: host
+    ports:
+      - "${LOCAL_BIND_ADDRESS:-127.0.0.1}:9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/host/root:ro,rslave
+    networks:
+      cloud-net:
+        ipv4_address: 10.10.10.61
+
+  monitoring-prometheus-server:
+    <<: *common
+    image: prom/prometheus:v2.55.1
+    container_name: monitoring-prometheus-server
+    ports:
+      - "${LOCAL_BIND_ADDRESS:-127.0.0.1}:9090:9090"
+    volumes:
+      - ./monitoring-prometheus-server/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    networks:
+      cloud-net:
+        ipv4_address: 10.10.10.60
+
+  monitoring-grafana-dashboard-server:
+    <<: *common
+    image: grafana/grafana:11.3.1
+    container_name: monitoring-grafana-dashboard-server
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?Tao .env tu .env.example}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    ports:
+      - "${LOCAL_BIND_ADDRESS:-127.0.0.1}:3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring-grafana-dashboard-server/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring-grafana-dashboard-server/dashboards:/var/lib/grafana/dashboards:ro
+    networks:
+      cloud-net:
+        ipv4_address: 10.10.10.70
+
+  api-gateway-proxy-server:
+    <<: *common
+    image: nginx:1.28-alpine
+    container_name: api-gateway-proxy-server
+    depends_on:
+      web-frontend-server:
+        condition: service_healthy
+      application-backend-server:
+        condition: service_healthy
+      authentication-identity-server:
+        condition: service_started
+    ports:
+      - "${GATEWAY_BIND_ADDRESS:-127.0.0.1}:${GATEWAY_PORT:-80}:80"
+    volumes:
+      - ./api-gateway-proxy-server/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      cloud-net:
+        ipv4_address: 10.10.10.80

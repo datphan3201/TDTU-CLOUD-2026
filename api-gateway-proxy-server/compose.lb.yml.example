@@ -1,0 +1,29 @@
+# Chạy -f docker-compose.yml trước file này.
+services:
+  web-frontend-server:
+    hostname: web-frontend-server1
+    networks:
+      cloud-net:
+        aliases: [web-frontend-server1]
+
+  web-frontend-server2:
+    build: ./web-frontend-server
+    image: ${DOCKERHUB_USERNAME:-myminicloud}/myminicloud-web:${IMAGE_TAG:-dev}
+    container_name: web-frontend-server2
+    hostname: web-frontend-server2
+    restart: unless-stopped
+    networks:
+      cloud-net:
+        ipv4_address: 10.10.10.11
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, "http://127.0.0.1/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  api-gateway-proxy-server:
+    depends_on:
+      web-frontend-server2:
+        condition: service_healthy
+    volumes:
+      - ./api-gateway-proxy-server/nginx.lb.conf:/etc/nginx/nginx.conf:ro
