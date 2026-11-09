@@ -16,20 +16,20 @@ Mục tiêu bàn giao là một hệ thống có thể dựng lại từ reposit
 
 | Task | Phụ trách | Phụ thuộc | Sản phẩm bàn giao | Trạng thái |
 |---|---|---|---|---|
-| INT-00: cấu hình nền, .env, network | Chưa phân công | — | Compose validate, IP/cổng thống nhất | Có khung |
-| WEB-01 | Chưa phân công | INT-00 | 3 bài blog + ảnh + navigation | Chưa làm |
+| INT-00: cấu hình nền, .env, network | All | — | Compose validate, IP/cổng thống nhất | Có khung |
+| WEB-01 | Egew | INT-00 | 3 bài blog + ảnh + navigation | Chưa làm |
 | APP-01 | Chưa phân công | INT-00 | /student trả đúng 5 sinh viên | Chưa làm |
 | DB-01 | Chưa phân công | INT-00 | migration studentdb, 3 bản ghi, quyền SELECT | Có mẫu migration |
 | APP-02 | Chưa phân công | DB-01 | /students-db đọc DB thật | Chưa làm |
-| AUTH-01 | Chưa phân công | API + gateway nền | realm, 2 user, client, /secure xác minh JWT | Chưa làm |
+| AUTH-01 | Newton | API + gateway nền | realm, 2 user, client, /secure xác minh JWT | Chưa làm |
 | OBJ-01 | Chưa phân công | INT-00 | bucket/avatar/PDF + test tải lại | Chưa làm |
-| DNS-01 | Chưa phân công | IP đã chốt | dig 4 bản ghi khớp IP thực | Có bản ghi web |
+| DNS-01 | Newton | IP đã chốt | dig 4 bản ghi khớp IP thực | Có bản ghi web |
 | MON-01 | Chưa phân công | web nền | node UP, web exporter UP và nginx_up=1 | Có scrape node |
-| GRAF-01 | Chưa phân công | node metrics | dashboard 3 panel + JSON export | Có datasource |
+| GRAF-01 | Demonwan | node metrics | dashboard 3 panel + JSON export | Có datasource |
 | GW-01 | Chưa phân công | APP-01 | /student/ trả cùng dữ liệu /api/student | Chưa làm |
 | LB-01 | Chưa phân công | web + gateway | 2 web, phản hồi luân phiên | Chưa làm |
-| DEPLOY-01 | Chưa phân công | nghiệm thu local | Docker Hub + EC2 + log kiểm thử | Chưa làm |
-| REPORT-01 | Chưa phân công | minh chứng từng task | báo cáo 5 chương, video, phụ lục | Có dàn ý |
+| DEPLOY-01 | Newton| nghiệm thu local | Docker Hub + EC2 + log kiểm thử | Chưa làm |
+| REPORT-01 | All | minh chứng từng task | báo cáo 5 chương, video, phụ lục | Có dàn ý |
 
 ## Chặng 1 — dựng nền, từng nhóm nhỏ
 
