@@ -36,7 +36,7 @@ Phân công đã thống nhất ngày 09/11/2026. Nhóm xác nhận đã hoàn t
 - **Demonwan:** phụ trách Prometheus, Grafana và DNS; thống nhất endpoint `stub_status` của web với Egew trước khi cấu hình Nginx Exporter.
 - **Egew:** phụ trách blog, MinIO và load balancing; chuẩn bị avatar, phối hợp cả nhóm lấy PDF báo cáo để upload vào `documents`.
 - **Newton:** phụ trách API, database, JWT và route gateway; APP-02 là phần tích hợp tùy chọn, thực hiện sau DB-01. Điều phối tích hợp chung và triển khai Docker Hub/EC2.
-- **Gateway:** Newton hoàn thành route `/student/` trước, sau đó Egew bổ sung upstream cân bằng tải. Hai người thống nhất thay đổi trước khi sửa cùng file `nginx.conf`.
+- **Gateway:** Newton tích hợp route `/student/` trước, sau đó Egew tích hợp upstream cân bằng tải vào cấu hình chung. Egew vẫn có thể chuẩn bị và kiểm thử LB riêng bằng trang mẫu ngay từ đầu; thứ tự này chỉ áp dụng khi ghép thay đổi vào cùng file `nginx.conf`.
 - **Cấu hình chung:** cả nhóm thống nhất MSSV đại diện, service/IP/cổng và schema. Khi sửa Compose hoặc hợp đồng tích hợp, báo Newton và tích hợp từng thay đổi.
 - **Minh chứng và báo cáo:** mỗi người tự kiểm thử, lưu ảnh/log vào `docs/evidence/` theo task và viết phần báo cáo tương ứng. Cả ba kiểm thử lại phần mình trên EC2; không dồn việc thu minh chứng cho Newton.
 
@@ -73,13 +73,38 @@ bash scripts/smoke-test.sh
 
 ## Chặng 2 — hoàn thiện tính năng và tích hợp
 
-Sau khi nền hoạt động, triển khai các luồng theo phân công:
+### Các mốc triển khai song song
 
-- Egew: WEB-01 → OBJ-01; sau khi web/gateway ổn định, thực hiện LB-01.
-- Newton: APP-01 → GW-01; DB-01 → APP-02 (tùy chọn); tiếp tục AUTH-01.
-- Demonwan: MON-01 và GRAF-01, đồng thời hoàn thiện DNS-01 sau khi IP được chốt.
+Nền local đã hoạt động nên cả ba thành viên có thể bắt đầu ngay. Các mốc dưới đây là thứ tự bàn giao, không phải lịch theo ngày và không yêu cầu cả nhóm đợi nhau sau mỗi mốc. Chốt ngày cụ thể khi biết hạn nộp; dành thời gian riêng cho tích hợp, EC2 và quay demo. Một người tự sắp xếp các task của mình; các luồng độc lập có thể tiến hành đồng thời giữa các thành viên.
 
-Không cần chờ blog hoàn thiện để làm API, storage hoặc giám sát. Mỗi khi thay dependency chung, chạy lại đúng kiểm thử chịu ảnh hưởng. Cuối chặng chạy toàn bộ [ma trận nghiệm thu](ACCEPTANCE.md), bao gồm các trường hợp token sai và dữ liệu tồn tại sau khi recreate.
+| Mốc | Demonwan | Egew | Newton | Điều kiện bàn giao |
+|---|---|---|---|---|
+| 1 — bắt đầu ngay | DNS-01, MON-01, GRAF-01 dùng node metrics hiện có | WEB-01, tạo bucket và avatar OBJ-01; chuẩn bị LB bằng trang mẫu nếu cần | APP-01, DB-01; chuẩn bị realm/client và code JWT | Mỗi task có cấu hình/code và kết quả kiểm thử riêng |
+| 2 — tích hợp | Hoàn thiện dashboard và kiểm tra metrics sau khi ghép cấu hình | Ghép LB-01 với gateway; kiểm tra nội dung blog trên cả hai web; bổ sung PDF khi sẵn sàng | GW-01, tích hợp AUTH-01; APP-02 sau DB-01 nếu làm | Các chức năng trực tiếp và qua gateway đạt; cấu hình dùng chung không làm hỏng phần đã có |
+| 3 — nghiệm thu local | Kiểm thử DNS/monitoring/Grafana | Kiểm thử blog/storage/LB | Kiểm thử API/DB/auth và điều phối kiểm thử toàn cụm | Chạy ma trận nghiệm thu, lưu minh chứng, kiểm tra persistence và ca lỗi |
+| 4 — bàn giao | Kiểm thử lại phần mình trên EC2, viết báo cáo | Kiểm thử lại phần mình trên EC2, viết báo cáo | Điều phối Docker Hub/EC2, kiểm thử lại API/DB/auth | Nghiệm thu EC2, báo cáo, video và phụ lục; xem Chặng 3 |
+
+### Phụ thuộc thực tế giữa các task
+
+| Task | Có thể bắt đầu ngay | Cần chờ để kiểm thử hoặc hoàn tất |
+|---|---|---|
+| GRAF-01 | Dùng Node Exporter và datasource đã chạy | Cần đủ mẫu scrape để biểu đồ `rate()` có dữ liệu; không phụ thuộc web exporter |
+| MON-01 | Web nền đã có `stub_status` ở cổng nội bộ 8082 | Thống nhất endpoint với Egew, chạy exporter để kiểm chứng `nginx_up=1`; không chờ blog |
+| DNS-01 | Thêm bản ghi theo IP đã chốt | Service tương ứng phải chạy để đối chiếu IP thực |
+| WEB-01 và OBJ-01 | Blog, bucket và avatar độc lập với API/DB/auth | PDF báo cáo hoàn chỉnh upload ở cuối; bucket và avatar làm trước |
+| GW-01 | Chuẩn bị route theo hợp đồng HTTP | APP-01 phải trả đúng dữ liệu để so sánh `/student/` với `/api/student` |
+| APP-02 (tùy chọn) | Chuẩn bị kết nối DB và code truy vấn | DB-01 có bảng, dữ liệu và quyền SELECT để nghiệm thu |
+| AUTH-01 | Chuẩn bị cấu hình Keycloak và code JWT độc lập với blog và DB | Realm/client/users, audience mapper và backend phải sẵn sàng để kiểm thử token đúng/sai |
+| LB-01 | Dựng hai web bằng trang mẫu và cấu hình upstream riêng | Phối hợp ghép gateway với Newton; khi blog xong, đưa cùng nội dung vào cả hai web và giữ nhãn instance khác nhau |
+| DEPLOY-01 | Chuẩn bị môi trường EC2 và quy trình đóng gói sớm | Chốt bản local đã tích hợp trước khi nghiệm thu cuối trên EC2 |
+
+### Tránh xung đột cấu hình chung
+
+- Demonwan dùng override monitoring theo mẫu `monitoring-prometheus-server/compose.web-metrics.yml.example`; Egew dùng override LB theo mẫu `api-gateway-proxy-server/compose.lb.yml.example`. Sao chép thành file hoạt động theo README từng server và thống nhất các đường dẫn config được mount.
+- Khi tích hợp, truyền đầy đủ cả hai override theo thứ tự thống nhất, kiểm tra `docker compose ... config --quiet` rồi mới `up`. Dùng cùng bộ cờ `-f` cho các lần vận hành tiếp theo; override riêng vẫn cần kiểm thử khi ghép chung.
+- Với `nginx.conf`, thống nhất người sửa và thứ tự bàn giao; Newton ghép route trước, Egew ghép LB sau. Nếu override LB dùng file gateway riêng, phải bảo toàn các route đã có, gồm `/student/`.
+- Commit theo mã task, kèm lệnh kiểm thử và minh chứng. Cập nhật nhánh từ remote trước khi tích hợp, xử lý thay đổi cục bộ trước khi pull; không ghi đè phần của người khác.
+- Mỗi khi thay dependency chung, chạy lại đúng kiểm thử chịu ảnh hưởng. Cuối chặng chạy toàn bộ [ma trận nghiệm thu](ACCEPTANCE.md), bao gồm các trường hợp token sai và dữ liệu tồn tại sau khi recreate.
 
 ## Chặng 3 — đóng gói, EC2, báo cáo
 
