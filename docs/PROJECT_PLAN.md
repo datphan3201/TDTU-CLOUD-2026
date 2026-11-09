@@ -12,24 +12,33 @@ Mục tiêu bàn giao là một hệ thống có thể dựng lại từ reposit
 
 ## Bảng nhận việc
 
-Điền người thực hiện trước khi bắt đầu; không đặt thời hạn khi chưa biết số thành viên và lịch nộp.
+Phân công đã thống nhất ngày 09/11/2026. Nhóm xác nhận đã hoàn thành yêu cầu cơ bản trên local; bước tiếp theo là các mục mở rộng. Chưa đặt thời hạn vì chưa chốt lịch nộp. Kết quả local không thay thế nghiệm thu trên EC2.
 
 | Task | Phụ trách | Phụ thuộc | Sản phẩm bàn giao | Trạng thái |
 |---|---|---|---|---|
-| INT-00: cấu hình nền, .env, network | All | — | Compose validate, IP/cổng thống nhất | Có khung |
+| INT-00: cấu hình nền, .env, network | Cả nhóm | — | Compose validate, IP/cổng thống nhất | Hoàn thành local theo xác nhận của nhóm |
 | WEB-01 | Egew | INT-00 | 3 bài blog + ảnh + navigation | Chưa làm |
-| APP-01 | Chưa phân công | INT-00 | /student trả đúng 5 sinh viên | Chưa làm |
-| DB-01 | Chưa phân công | INT-00 | migration studentdb, 3 bản ghi, quyền SELECT | Có mẫu migration |
-| APP-02 | Chưa phân công | DB-01 | /students-db đọc DB thật | Chưa làm |
+| APP-01 | Newton | INT-00 | /student trả đúng 5 sinh viên | Chưa làm |
+| DB-01 | Newton | INT-00 | migration studentdb, 3 bản ghi, quyền SELECT | Có mẫu migration |
+| APP-02 (tích hợp tùy chọn) | Newton | DB-01 | /students-db đọc DB thật | Chưa làm; thực hiện sau DB-01 |
 | AUTH-01 | Newton | API + gateway nền | realm, 2 user, client, /secure xác minh JWT | Chưa làm |
-| OBJ-01 | Chưa phân công | INT-00 | bucket/avatar/PDF + test tải lại | Chưa làm |
-| DNS-01 | Newton | IP đã chốt | dig 4 bản ghi khớp IP thực | Có bản ghi web |
-| MON-01 | Chưa phân công | web nền | node UP, web exporter UP và nginx_up=1 | Có scrape node |
-| GRAF-01 | Demonwan | node metrics | dashboard 3 panel + JSON export | Có datasource |
-| GW-01 | Chưa phân công | APP-01 | /student/ trả cùng dữ liệu /api/student | Chưa làm |
-| LB-01 | Chưa phân công | web + gateway | 2 web, phản hồi luân phiên | Chưa làm |
-| DEPLOY-01 | Newton| nghiệm thu local | Docker Hub + EC2 + log kiểm thử | Chưa làm |
-| REPORT-01 | All | minh chứng từng task | báo cáo 5 chương, video, phụ lục | Có dàn ý |
+| OBJ-01 | Egew | INT-00 | bucket/avatar/PDF + test tải lại | Chưa làm |
+| DNS-01 | Demonwan | IP đã chốt | dig 4 bản ghi khớp IP thực | Có bản ghi web |
+| MON-01 | Demonwan | web nền | node UP, web exporter UP, nginx_up=1, request counter tăng | Có scrape node |
+| GRAF-01 | Demonwan | node metrics | System Health of MSSV: CPU/RAM/Network + JSON export | Có datasource; dashboard mở rộng chưa nghiệm thu |
+| GW-01 | Newton | APP-01 | /student/ trả cùng dữ liệu /api/student | Chưa làm |
+| LB-01 | Egew | web + gateway, phối hợp Newton | 2 web có nhãn khác nhau, Round Robin, request tới cả hai | Chưa làm |
+| DEPLOY-01 | Newton điều phối; cả nhóm kiểm thử | nghiệm thu local | Docker Hub + EC2 + log kiểm thử từng phần | Chưa làm |
+| REPORT-01 | Cả nhóm | minh chứng từng task | mỗi người viết phần phụ trách, cùng ghép báo cáo 5 chương và video | Có dàn ý |
+
+### Phối hợp và bàn giao
+
+- **Demonwan:** phụ trách Prometheus, Grafana và DNS; thống nhất endpoint `stub_status` của web với Egew trước khi cấu hình Nginx Exporter.
+- **Egew:** phụ trách blog, MinIO và load balancing; chuẩn bị avatar, phối hợp cả nhóm lấy PDF báo cáo để upload vào `documents`.
+- **Newton:** phụ trách API, database, JWT và route gateway; APP-02 là phần tích hợp tùy chọn, thực hiện sau DB-01. Điều phối tích hợp chung và triển khai Docker Hub/EC2.
+- **Gateway:** Newton hoàn thành route `/student/` trước, sau đó Egew bổ sung upstream cân bằng tải. Hai người thống nhất thay đổi trước khi sửa cùng file `nginx.conf`.
+- **Cấu hình chung:** cả nhóm thống nhất MSSV đại diện, service/IP/cổng và schema. Khi sửa Compose hoặc hợp đồng tích hợp, báo Newton và tích hợp từng thay đổi.
+- **Minh chứng và báo cáo:** mỗi người tự kiểm thử, lưu ảnh/log vào `docs/evidence/` theo task và viết phần báo cáo tương ứng. Cả ba kiểm thử lại phần mình trên EC2; không dồn việc thu minh chứng cho Newton.
 
 ## Chặng 1 — dựng nền, từng nhóm nhỏ
 
@@ -64,13 +73,11 @@ bash scripts/smoke-test.sh
 
 ## Chặng 2 — hoàn thiện tính năng và tích hợp
 
-Sau khi nền hoạt động, có thể chia các luồng độc lập cho thành viên:
+Sau khi nền hoạt động, triển khai các luồng theo phân công:
 
-- Nội dung: WEB-01 và OBJ-01.
-- Dữ liệu: DB-01 → APP-02; APP-01 → GW-01.
-- Danh tính: AUTH-01, phối hợp người làm API và gateway.
-- Vận hành: DNS-01; MON-01 và GRAF-01.
-- Sau khi web/gateway ổn định: LB-01.
+- Egew: WEB-01 → OBJ-01; sau khi web/gateway ổn định, thực hiện LB-01.
+- Newton: APP-01 → GW-01; DB-01 → APP-02 (tùy chọn); tiếp tục AUTH-01.
+- Demonwan: MON-01 và GRAF-01, đồng thời hoàn thiện DNS-01 sau khi IP được chốt.
 
 Không cần chờ blog hoàn thiện để làm API, storage hoặc giám sát. Mỗi khi thay dependency chung, chạy lại đúng kiểm thử chịu ảnh hưởng. Cuối chặng chạy toàn bộ [ma trận nghiệm thu](ACCEPTANCE.md), bao gồm các trường hợp token sai và dữ liệu tồn tại sau khi recreate.
 
