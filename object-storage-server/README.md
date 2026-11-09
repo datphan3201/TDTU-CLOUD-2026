@@ -6,7 +6,7 @@
 
 MinIO cung cấp API S3 ở 9000 và Console ở 9001. Dữ liệu bền trong named volume `object-data`. `uploads/` chỉ là chỗ đặt tệp nguồn cục bộ, được gitignore; không tự đồng bộ vào bucket.
 
-Image lab ghim `RELEASE.2025-04-22T22-12-26Z` để giữ giao diện quản lý bucket tương ứng bài hướng dẫn. Khi đổi phiên bản phải kiểm tra lại thao tác Console; tham chiếu [release chính thức](https://github.com/minio/minio/releases/tag/RELEASE.2025-04-22T22-12-26Z). Ghi đúng phiên bản thực dùng trong báo cáo.
+Image lab được build bằng Dockerfile từ mã nguồn chính thức, ghim tag `RELEASE.2025-04-22T22-12-26Z` để giữ giao diện quản lý bucket tương ứng bài hướng dẫn. Image cũ trên Docker Hub và Quay không còn tải được khi kiểm tra ngày 09/11/2026; không cần `docker login` để sửa lỗi này. Lần build đầu cần Internet để tải Go, mã nguồn và dependencies, và sẽ lâu hơn các image có sẵn. Khi đổi phiên bản phải kiểm tra lại thao tác Console; tham chiếu [release chính thức](https://github.com/minio/minio/releases/tag/RELEASE.2025-04-22T22-12-26Z). Ghi rõ đây là bản tự build trong báo cáo.
 
 ## Việc cần làm
 
@@ -20,7 +20,7 @@ Image lab ghim `RELEASE.2025-04-22T22-12-26Z` để giữ giao diện quản lý
 ## Chạy và kiểm thử
 
 ```bash
-docker compose up -d object-storage-server
+docker compose up -d --build object-storage-server
 curl -fsS http://localhost:9000/minio/health/live
 # Sau khi upload và cấu hình quyền:
 curl -I http://localhost:9000/profile-pics/avatar.jpg

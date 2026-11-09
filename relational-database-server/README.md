@@ -6,6 +6,8 @@
 
 MariaDB 11.4, named volume `database-data`, user ứng dụng từ `.env`. Init SQL tạo `minicloud.notes` với một dòng mẫu. Thư mục `migrations/` chứa mẫu việc mở rộng, chưa tạo bảng sinh viên.
 
+Nếu cổng host `3306` đã được dùng bởi MySQL/MariaDB khác, đặt `DB_HOST_PORT=3307` trong `.env`. Chỉ cổng truy cập từ host thay đổi; API vẫn dùng `relational-database-server:3306` trong Docker network. Các lệnh `docker compose exec` dưới đây không bị ảnh hưởng.
+
 ## Việc cần làm
 
 - [ ] Sao chép `migrations/002_students.sql.example` thành `migrations/002_students.sql`.

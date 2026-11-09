@@ -8,6 +8,8 @@ Prometheus scrape chính nó và Node Exporter, chu kỳ 15 giây. Node Exporter
 
 Node Exporter không đo từng container. Network metrics mặc định thuộc network namespace exporter vì giữ chung `cloud-net`; không dùng chúng để khẳng định lưu lượng toàn host. Khi cần mở rộng giám sát host network chính xác trên Linux, xem [hướng dẫn Node Exporter Docker](https://github.com/prometheus/node_exporter#docker) và ghi lại thay đổi kiến trúc.
 
+Mount `/host/root` mặc định chỉ đọc, dùng propagation mặc định để tương thích host có `/` không phải shared mount (nếu dùng `rslave` sẽ lỗi `path / is mounted on / but it is not a shared mount`). Những mount host thêm sau khi container chạy có thể không xuất hiện trong exporter; recreate exporter nếu cần quan sát chúng. Trên Linux đã cấu hình shared mounts, có thể dùng `ro,rslave` theo hướng dẫn upstream.
+
 ## Kiểm chứng phần nền
 
 ```bash

@@ -41,6 +41,8 @@ Nét đứt là tích hợp còn TODO. DNS Bind9 phục vụ zone riêng; Docker
 
 IP tĩnh dùng để bản ghi DNS của bài lab trỏ đúng container. Các kết nối ứng dụng vẫn dùng **tên service**, không hardcode IP. Một vai trò monitoring có Node Exporter hỗ trợ; thêm web exporter và bản sao web sẽ tăng số container lên 12 nhưng vẫn giữ 9 vai trò.
 
+MinIO được build từ mã nguồn upstream tag `RELEASE.2025-04-22T22-12-26Z` bằng `object-storage-server/Dockerfile`, thay cho image công khai không còn tải được. Image local mang tên `${DOCKERHUB_USERNAME}/myminicloud-storage:RELEASE.2025-04-22T22-12-26Z`; cổng, biến môi trường và volume giữ theo hợp đồng trên.
+
 ## Hợp đồng HTTP
 
 | URL gateway | URL upstream | Kết quả nghiệm thu |
@@ -55,6 +57,8 @@ IP tĩnh dùng để bản ghi DNS của bài lab trỏ đúng container. Các k
 | `/student/` | app `/student` | cùng dữ liệu /api/student; TODO GW-01 |
 
 `/health` trên API là liveness: 200 chỉ xác nhận process API đang phục vụ, chưa chứng minh kết nối DB hoặc OIDC. Các endpoint TODO ban đầu trả 501.
+
+Cổng MariaDB trên host có thể đổi bằng `DB_HOST_PORT` (mặc định `3306`); cổng container và kết nối API luôn là `3306`.
 
 ## Hợp đồng dữ liệu
 
@@ -75,6 +79,8 @@ IP tĩnh dùng để bản ghi DNS của bài lab trỏ đúng container. Các k
 Keycloak có `KC_HTTP_RELATIVE_PATH=/auth`, gateway giữ nguyên prefix. Cách này theo [hướng dẫn reverse proxy của Keycloak](https://www.keycloak.org/server/reverseproxy). Cổng 8081 dành cho kiểm tra trực tiếp; giao diện sẽ dùng URL canonical ở cổng gateway.
 
 ## Giới hạn quan sát
+
+Root filesystem mount của Node Exporter dùng `/:/host/root:ro` với propagation mặc định để chạy được cả khi `/` trên host không phải shared mount. Các mount mới trên host có thể cần recreate exporter để quan sát; chỉ dùng `rslave` khi host hỗ trợ.
 
 Node Exporter cung cấp số liệu máy Linux, không tự cung cấp CPU/RAM từng container. Network mặc định thuộc namespace container exporter vì bài yêu cầu chung `cloud-net`; ghi rõ giới hạn khi thuyết trình. Muốn metrics network host chính xác trên EC2, thiết kế lại exporter dùng host network hoặc bổ sung collector phù hợp; metrics từng container cần cAdvisor hoặc giải pháp khác. Không gọi `node_*` là số liệu từng service.
 

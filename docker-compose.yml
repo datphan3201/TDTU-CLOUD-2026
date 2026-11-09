@@ -75,7 +75,7 @@ services:
       MARIADB_USER: ${DB_USER:-minicloud_app}
       MARIADB_PASSWORD: ${DB_PASSWORD:?Tao .env tu .env.example}
     ports:
-      - "${LOCAL_BIND_ADDRESS:-127.0.0.1}:3306:3306"
+      - "${LOCAL_BIND_ADDRESS:-127.0.0.1}:${DB_HOST_PORT:-3306}:3306"
     volumes:
       - database-data:/var/lib/mysql
       - ./relational-database-server/init:/docker-entrypoint-initdb.d:ro
@@ -112,8 +112,9 @@ services:
 
   object-storage-server:
     <<: *common
-    # Ghim bản lab có Console quản lý bucket theo đề; xem README của storage.
-    image: minio/minio:RELEASE.2025-04-22T22-12-26Z
+    # Build bản lab từ upstream vì image công khai không còn tải được.
+    build: ./object-storage-server
+    image: ${DOCKERHUB_USERNAME:-myminicloud}/myminicloud-storage:RELEASE.2025-04-22T22-12-26Z
     container_name: object-storage-server
     command: [server, /data, --console-address, ":9001"]
     environment:
@@ -156,7 +157,7 @@ services:
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
-      - /:/host/root:ro,rslave
+      - /:/host/root:ro
     networks:
       cloud-net:
         ipv4_address: 10.10.10.61
