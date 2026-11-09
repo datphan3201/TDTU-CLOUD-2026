@@ -2,6 +2,8 @@
 
 ## Sơ đồ
 
+Bộ [5 sơ đồ Archify tương tác](diagrams/index.html) gồm tổng thể local, triển khai Docker, JWT mục tiêu, giám sát và load balancing mục tiêu. Xem [ghi chú nguồn và cách tái tạo](diagrams/README.md) để phân biệt cấu hình hiện tại với phần mở rộng dự kiến.
+
 ```mermaid
 flowchart LR
     browser[Trình duyệt / curl] --> gateway[Nginx Gateway :80]

@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "architecture",
+  "quality": "showcase",
+  "specification": {
+    "path": "/home/thanhdat/code/tdtu/TDTU-CLOUD-2026/docs/diagrams/05-load-balancing/candidate.json",
+    "sha256": "67e11f302c1afcf9166fb52fe55fa5708a9ffcd5bbb224a3b55741f27f83256a",
+    "bytes": 4190
+  },
+  "artifact": {
+    "path": "/home/thanhdat/code/tdtu/TDTU-CLOUD-2026/docs/diagrams/05-load-balancing/diagram.html",
+    "sha256": "970ccb0a903a51840f2bd185ff44b95f6652219bbb5c52d0b55e5e29521da34a",
+    "bytes": 839026
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "pass"
+  },
+  "diagnostics": [],
+  "diagnosticSummary": {
+    "total": 0,
+    "shown": 0,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "/home/thanhdat/code/tdtu/TDTU-CLOUD-2026/docs/diagrams/05-load-balancing/review-2/diagram.finalize.json",
+    "summaryReceipt": "/home/thanhdat/code/tdtu/TDTU-CLOUD-2026/docs/diagrams/05-load-balancing/review-2/diagram.finalize-summary.json",
+    "browserCheckReceipt": "/home/thanhdat/code/tdtu/TDTU-CLOUD-2026/docs/diagrams/05-load-balancing/review-2/diagram.browser-check.json"
+  },
+  "update": {
+    "status": "current",
+    "installedVersion": "3.2.0",
+    "availableVersion": "3.2.0",
+    "releaseNotes": null,
+    "checkedAt": "2026-11-09T07:20:37.106Z",
+    "source": "cache",
+    "noticeRequired": false,
+    "noticeText": null
+  },
+  "visualReview": "not-requested",
+  "durationMs": 2748,
+  "browserCheck": {
+    "requested": true,
+    "ran": true
+  }
+}

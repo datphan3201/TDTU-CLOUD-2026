@@ -1,0 +1,416 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Triển khai Docker — mạng và dữ liệu bền",
+    "locale": "en",
+    "output": "docs/diagrams/02-deployment/diagram.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/datphan3201/TDTU-CLOUD-2026.git",
+      "revision": "e786a4f4c98b9e87c1d094bb3e24ba4186ccd40e"
+    }
+  },
+  "components": [
+    {
+      "id": "gw",
+      "type": "backend",
+      "label": "Gateway",
+      "sublabel": ".80 · host 80 → 80",
+      "pos": [
+        40,
+        65
+      ],
+      "size": [
+        200,
+        64
+      ],
+      "sources": [
+        {
+          "path": "docker-compose.yml",
+          "line": 195,
+          "end_line": 212
+        }
+      ]
+    },
+    {
+      "id": "web",
+      "type": "frontend",
+      "label": "Web Nginx",
+      "sublabel": ".10 · host 8080 → 80",
+      "pos": [
+        285,
+        65
+      ],
+      "size": [
+        200,
+        64
+      ],
+      "sources": [
+        {
+          "path": "docker-compose.yml",
+          "line": 26,
+          "end_line": 43
+        }
+      ]
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "Flask API",
+      "sublabel": ".20 · host 8085 → 8081",
+      "pos": [
+        530,
+        65
+      ],
+      "size": [
+        200,
+        64
+      ],
+      "sources": [
+        {
+          "path": "docker-compose.yml",
+          "line": 42,
+          "end_line": 59
+        }
+      ]
+    },
+    {
+      "id": "dns",
+      "type": "cloud",
+      "label": "Bind9",
+      "sublabel": ".53 · 1053 → 53 TCP/UDP",
+      "pos": [
+        775,
+        65
+      ],
+      "size": [
+        200,
+        64
+      ],
+      "sources": [
+        {
+          "path": "docker-compose.yml",
+          "line": 131,
+          "end_line": 148
+        }
+      ]
+    },
+    {
+      "id": "node",
+      "type": "backend",
+      "label": "Node Exporter",
+      "sublabel": ".61 · host 9100 → 9100",
+      "pos": [
+        1020,
+        65
+      ],
+      "size": [
+        200,
+        64
+      ],
+      "sources": [
+        {
+          "path": "docker-compose.yml",
+          "line": 145,
+          "end_line": 162
+        }
+      ]
+    },
+    {
+      "id": "db",
+      "type": "database",
+      "label": "MariaDB",
+      "sublabel": ".21 · :3306 nội bộ",
+      "pos": [
+        40,
+        270
+      ],
+      "size": [
+        200,
+        64
+      ],
+      "sources": [
+        {
+          "path": "docker-compose.yml",
+          "line": 68,
+          "end_line": 81
+        }
+      ]
+    },
+    {
+      "id": "vol_db",
+      "type": "database",
+      "label": "database-data",
+      "sublabel": "Docker named volume",
+      "pos": [
+        40,
+        470
+      ],
+      "size": [
+        200,
+        64
+      ],
+      "sources": [
+        {
+          "path": "docker-compose.yml",
+          "line": 80
+        }
+      ]
+    },
+    {
+      "id": "auth",
+      "type": "security",
+      "label": "Keycloak",
+      "sublabel": ".30 · host 8081 → 8080",
+      "pos": [
+        285,
+        270
+      ],
+      "size": [
+        200,
+        64
+      ],
+      "sources": [
+        {
+          "path": "docker-compose.yml",
+          "line": 92,
+          "end_line": 108
+        }
+      ]
+    },
+    {
+      "id": "vol_auth",
+      "type": "database",
+      "label": "keycloak-data",
+      "sublabel": "Docker named volume",
+      "pos": [
+        285,
+        470
+      ],
+      "size": [
+        200,
+        64
+      ],
+      "sources": [
+        {
+          "path": "docker-compose.yml",
+          "line": 107
+        }
+      ]
+    },
+    {
+      "id": "minio",
+      "type": "database",
+      "label": "MinIO",
+      "sublabel": ".40 · host 9000 / 9001",
+      "pos": [
+        530,
+        270
+      ],
+      "size": [
+        200,
+        64
+      ],
+      "sources": [
+        {
+          "path": "docker-compose.yml",
+          "line": 113,
+          "end_line": 127
+        }
+      ]
+    },
+    {
+      "id": "vol_minio",
+      "type": "database",
+      "label": "object-data",
+      "sublabel": "Docker named volume",
+      "pos": [
+        530,
+        470
+      ],
+      "size": [
+        200,
+        64
+      ],
+      "sources": [
+        {
+          "path": "docker-compose.yml",
+          "line": 126
+        }
+      ]
+    },
+    {
+      "id": "prom",
+      "type": "backend",
+      "label": "Prometheus",
+      "sublabel": ".60 · host 9090 → 9090",
+      "pos": [
+        775,
+        270
+      ],
+      "size": [
+        200,
+        64
+      ],
+      "sources": [
+        {
+          "path": "docker-compose.yml",
+          "line": 164,
+          "end_line": 173
+        }
+      ]
+    },
+    {
+      "id": "vol_prom",
+      "type": "database",
+      "label": "prometheus-data",
+      "sublabel": "Docker named volume",
+      "pos": [
+        775,
+        470
+      ],
+      "size": [
+        200,
+        64
+      ],
+      "sources": [
+        {
+          "path": "docker-compose.yml",
+          "line": 172
+        }
+      ]
+    },
+    {
+      "id": "graf",
+      "type": "frontend",
+      "label": "Grafana",
+      "sublabel": ".70 · host 3000 → 3000",
+      "pos": [
+        1020,
+        270
+      ],
+      "size": [
+        200,
+        64
+      ],
+      "sources": [
+        {
+          "path": "docker-compose.yml",
+          "line": 177,
+          "end_line": 189
+        }
+      ]
+    },
+    {
+      "id": "vol_graf",
+      "type": "database",
+      "label": "grafana-data",
+      "sublabel": "Docker named volume",
+      "pos": [
+        1020,
+        470
+      ],
+      "size": [
+        200,
+        64
+      ],
+      "sources": [
+        {
+          "path": "docker-compose.yml",
+          "line": 188
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "from": "db",
+      "to": "vol_db",
+      "label": "Mount dữ liệu",
+      "variant": "default"
+    },
+    {
+      "from": "auth",
+      "to": "vol_auth",
+      "label": "Mount dữ liệu",
+      "variant": "default"
+    },
+    {
+      "from": "minio",
+      "to": "vol_minio",
+      "label": "Mount dữ liệu",
+      "variant": "default"
+    },
+    {
+      "from": "prom",
+      "to": "vol_prom",
+      "label": "Mount dữ liệu",
+      "variant": "default"
+    },
+    {
+      "from": "graf",
+      "to": "vol_graf",
+      "label": "Mount dữ liệu",
+      "variant": "default"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Phạm vi triển khai",
+      "items": [
+        "Hiện tại: một máy local chạy Docker Compose; EC2 là môi trường triển khai tiếp theo.",
+        "Mọi IP trong sơ đồ có tiền tố 10.10.10; không phải IP public."
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Cổng host và volume",
+      "items": [
+        "Các cổng host mặc định bind 127.0.0.1; gateway có cấu hình bind riêng khi lên EC2.",
+        "Local đã đổi MariaDB sang host 3307 → 3306; nguồn commit vẫn là mặc định 3306.",
+        "Named volume giữ dữ liệu khi recreate; các file cấu hình/provisioning được bind mount riêng."
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Node Exporter",
+      "items": [
+        "Đọc /proc, /sys và root filesystem của môi trường Linux Docker quan sát.",
+        "Không coi metrics node_* là CPU/RAM từng container."
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Docker host · 10 container trên cloud-net 10.10.10.0/24",
+      "wraps": [
+        "gw",
+        "web",
+        "api",
+        "dns",
+        "node",
+        "db",
+        "auth",
+        "minio",
+        "prom",
+        "graf"
+      ],
+      "pad": 24
+    },
+    {
+      "kind": "region",
+      "label": "Lưu trữ Docker trên cùng host · giữ lại khi recreate",
+      "wraps": [
+        "vol_db",
+        "vol_auth",
+        "vol_minio",
+        "vol_prom",
+        "vol_graf"
+      ],
+      "pad": 24
+    }
+  ]
+}

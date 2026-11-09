@@ -1,0 +1,359 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "MyMiniCloud — kiến trúc local hiện tại",
+    "locale": "en",
+    "output": "docs/diagrams/01-overview/diagram.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/datphan3201/TDTU-CLOUD-2026.git",
+      "revision": "e786a4f4c98b9e87c1d094bb3e24ba4186ccd40e"
+    }
+  },
+  "components": [
+    {
+      "id": "browser",
+      "type": "external",
+      "label": "Người dùng",
+      "sublabel": "Trình duyệt / curl",
+      "pos": [
+        40,
+        170
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "sources": [
+        {
+          "path": "docs/ARCHITECTURE.md",
+          "line": 7,
+          "end_line": 19
+        }
+      ]
+    },
+    {
+      "id": "gateway",
+      "type": "backend",
+      "label": "Nginx Gateway",
+      "sublabel": ":80 · định tuyến HTTP",
+      "pos": [
+        360,
+        170
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "sources": [
+        {
+          "path": "api-gateway-proxy-server/nginx.conf",
+          "line": 15,
+          "end_line": 42
+        }
+      ]
+    },
+    {
+      "id": "web",
+      "type": "frontend",
+      "label": "Web / Blog",
+      "sublabel": "Nginx :80 · HTML tĩnh",
+      "pos": [
+        680,
+        40
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "sources": [
+        {
+          "path": "web-frontend-server/conf.default",
+          "line": 1,
+          "end_line": 18
+        }
+      ]
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "Flask API",
+      "sublabel": ":8081 · /hello đã có",
+      "pos": [
+        680,
+        170
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "sources": [
+        {
+          "path": "application-backend-server/app.py",
+          "line": 1,
+          "end_line": 34
+        }
+      ]
+    },
+    {
+      "id": "auth",
+      "type": "security",
+      "label": "Keycloak",
+      "sublabel": ":8080/auth · quản trị",
+      "pos": [
+        680,
+        300
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "sources": [
+        {
+          "path": "docs/ARCHITECTURE.md",
+          "line": 31
+        }
+      ]
+    },
+    {
+      "id": "db",
+      "type": "database",
+      "label": "MariaDB",
+      "sublabel": ":3306 · minicloud.notes",
+      "pos": [
+        1000,
+        170
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "sources": [
+        {
+          "path": "relational-database-server/init/001_init.sql",
+          "line": 1,
+          "end_line": 9
+        }
+      ]
+    },
+    {
+      "id": "operator",
+      "type": "external",
+      "label": "Quản trị / kiểm thử",
+      "sublabel": "Console và DNS riêng",
+      "pos": [
+        40,
+        450
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "sources": [
+        {
+          "path": "README.md",
+          "line": 30,
+          "end_line": 44
+        }
+      ]
+    },
+    {
+      "id": "minio",
+      "type": "database",
+      "label": "MinIO",
+      "sublabel": ":9000 S3 · :9001 Console",
+      "pos": [
+        360,
+        450
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "sources": [
+        {
+          "path": "docs/ARCHITECTURE.md",
+          "line": 32
+        }
+      ]
+    },
+    {
+      "id": "dns",
+      "type": "cloud",
+      "label": "Bind9 DNS",
+      "sublabel": ":53 · zone cloud.local",
+      "pos": [
+        360,
+        610
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "sources": [
+        {
+          "path": "docs/ARCHITECTURE.md",
+          "line": 22,
+          "end_line": 33
+        }
+      ]
+    },
+    {
+      "id": "grafana",
+      "type": "frontend",
+      "label": "Grafana",
+      "sublabel": ":3000 · dashboard",
+      "pos": [
+        680,
+        610
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "sources": [
+        {
+          "path": "monitoring-grafana-dashboard-server/provisioning/datasources/prometheus.yml",
+          "line": 1,
+          "end_line": 9
+        }
+      ]
+    },
+    {
+      "id": "prom",
+      "type": "backend",
+      "label": "Prometheus",
+      "sublabel": ":9090 · scrape 15s",
+      "pos": [
+        1000,
+        610
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "sources": [
+        {
+          "path": "monitoring-prometheus-server/prometheus.yml",
+          "line": 1,
+          "end_line": 12
+        }
+      ]
+    },
+    {
+      "id": "node",
+      "type": "backend",
+      "label": "Node Exporter",
+      "sublabel": ":9100 · metrics Linux",
+      "pos": [
+        1000,
+        450
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "sources": [
+        {
+          "path": "docs/ARCHITECTURE.md",
+          "line": 35,
+          "end_line": 40
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "from": "browser",
+      "to": "gateway",
+      "label": "HTTP :80",
+      "variant": "emphasis"
+    },
+    {
+      "from": "gateway",
+      "to": "web",
+      "label": "/ và /blog/",
+      "variant": "default"
+    },
+    {
+      "from": "gateway",
+      "to": "api",
+      "label": "/api/",
+      "variant": "default"
+    },
+    {
+      "from": "gateway",
+      "to": "auth",
+      "label": "/auth/",
+      "variant": "default"
+    },
+    {
+      "from": "api",
+      "to": "db",
+      "label": "SQL · TODO APP-02",
+      "variant": "dashed"
+    },
+    {
+      "from": "operator",
+      "to": "minio",
+      "label": "S3 / Console",
+      "variant": "default"
+    },
+    {
+      "from": "operator",
+      "to": "dns",
+      "label": "dig :1053",
+      "variant": "default"
+    },
+    {
+      "from": "grafana",
+      "to": "prom",
+      "label": "PromQL",
+      "variant": "default"
+    },
+    {
+      "from": "prom",
+      "to": "node",
+      "label": "Scrape /metrics",
+      "variant": "default"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Trạng thái",
+      "items": [
+        "10 container cho 9 vai trò; sơ đồ thể hiện nền local.",
+        "Nét đứt SQL là tích hợp dự kiến; /students-db và /secure còn trả 501."
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "DNS và truy cập",
+      "items": [
+        "Docker DNS phân giải tên service; Bind9 phục vụ truy vấn cloud.local riêng.",
+        "MinIO và giao diện giám sát dùng cổng riêng, chưa đi qua gateway."
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Docker network cloud-net · 10.10.10.0/24",
+      "wraps": [
+        "gateway",
+        "web",
+        "api",
+        "auth",
+        "db",
+        "minio",
+        "dns",
+        "grafana",
+        "prom",
+        "node"
+      ],
+      "pad": 24
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "74e154aa-8ca8-4a2c-af22-f2c0ff0490ee",
+  "status": "current",
+  "command": "deliver",
+  "type": "sequence",
+  "input": "/home/thanhdat/code/tdtu/TDTU-CLOUD-2026/docs/diagrams/03-jwt/candidate.json",
+  "output": "/home/thanhdat/code/tdtu/TDTU-CLOUD-2026/docs/diagrams/03-jwt/diagram.html",
+  "specification": {
+    "sha256": "e9eee9bc2d33c878ca4a0e085493512820e2b3dc71ac3a46549d9a221ea22d0f",
+    "bytes": 4413
+  },
+  "artifact": {
+    "sha256": "210b7d2b6109de904984950e6811e1cbda69aca463f3658bd769c6896f09264c",
+    "bytes": 835498
+  }
+}

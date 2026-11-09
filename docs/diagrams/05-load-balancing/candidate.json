@@ -1,0 +1,201 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Load balancing — mục tiêu LB-01, chưa triển khai",
+    "locale": "en",
+    "output": "docs/diagrams/05-load-balancing/diagram.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/datphan3201/TDTU-CLOUD-2026.git",
+      "revision": "e786a4f4c98b9e87c1d094bb3e24ba4186ccd40e"
+    }
+  },
+  "components": [
+    {
+      "id": "client",
+      "type": "external",
+      "label": "Người dùng",
+      "sublabel": "HTTP / và /blog/",
+      "pos": [
+        40,
+        240
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "sources": [
+        {
+          "path": "api-gateway-proxy-server/README.md",
+          "line": 25,
+          "end_line": 58
+        }
+      ]
+    },
+    {
+      "id": "gw",
+      "type": "backend",
+      "label": "Nginx Gateway",
+      "sublabel": "upstream web_pool · TODO",
+      "pos": [
+        360,
+        240
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "sources": [
+        {
+          "path": "api-gateway-proxy-server/README.md",
+          "line": 30,
+          "end_line": 45
+        }
+      ]
+    },
+    {
+      "id": "web1",
+      "type": "frontend",
+      "label": "Web instance 1",
+      "sublabel": "10.10.10.10:80 · alias ...1",
+      "pos": [
+        710,
+        80
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "sources": [
+        {
+          "path": "api-gateway-proxy-server/compose.lb.yml.example",
+          "line": 3,
+          "end_line": 7
+        },
+        {
+          "path": "api-gateway-proxy-server/README.md",
+          "line": 48,
+          "end_line": 58
+        }
+      ]
+    },
+    {
+      "id": "web2",
+      "type": "frontend",
+      "label": "Web instance 2",
+      "sublabel": "10.10.10.11:80 · TODO",
+      "pos": [
+        710,
+        400
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "sources": [
+        {
+          "path": "api-gateway-proxy-server/compose.lb.yml.example",
+          "line": 9,
+          "end_line": 22
+        }
+      ]
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "Flask API",
+      "sublabel": "/api/ · /student/ TODO",
+      "pos": [
+        360,
+        40
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "sources": [
+        {
+          "path": "api-gateway-proxy-server/README.md",
+          "line": 9,
+          "end_line": 22
+        },
+        {
+          "path": "api-gateway-proxy-server/nginx.conf",
+          "line": 30,
+          "end_line": 34
+        }
+      ]
+    },
+    {
+      "id": "auth",
+      "type": "security",
+      "label": "Keycloak",
+      "sublabel": "/auth/ giữ nguyên",
+      "pos": [
+        360,
+        480
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "sources": [
+        {
+          "path": "api-gateway-proxy-server/nginx.conf",
+          "line": 35,
+          "end_line": 40
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "from": "client",
+      "to": "gw",
+      "label": "HTTP",
+      "variant": "emphasis"
+    },
+    {
+      "from": "gw",
+      "to": "web1",
+      "label": "Round Robin",
+      "variant": "emphasis"
+    },
+    {
+      "from": "gw",
+      "to": "web2",
+      "label": "Round Robin",
+      "variant": "emphasis"
+    },
+    {
+      "from": "gw",
+      "to": "api",
+      "label": "/api/; /student/ TODO"
+    },
+    {
+      "from": "gw",
+      "to": "auth",
+      "label": "/auth/"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Phạm vi",
+      "items": [
+        "Chỉ cân bằng tải nhóm web; API và Keycloak giữ route riêng.",
+        "Hai web dùng cùng nội dung Blog; nhãn instance khác nhau để kiểm chứng."
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Nghiệm thu",
+      "items": [
+        "Gửi nhiều request khi cả hai web healthy; thấy cả hai upstream.",
+        "Đối chiếu X-Web-Instance và X-Upstream-Addr cùng hai trang có nhãn.",
+        "Không cam kết thứ tự tuyệt đối khi có traffic khác; override mới là mẫu, chưa kích hoạt."
+      ]
+    }
+  ]
+}

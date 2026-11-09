@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "architecture",
+  "quality": "showcase",
+  "specification": {
+    "path": "/home/thanhdat/code/tdtu/TDTU-CLOUD-2026/docs/diagrams/02-deployment/candidate.json",
+    "sha256": "5a2c07d1e1d4f19d8233aa8518a47c61e8bac32c9240f1bf6dadda0fcae2788b",
+    "bytes": 8004
+  },
+  "artifact": {
+    "path": "/home/thanhdat/code/tdtu/TDTU-CLOUD-2026/docs/diagrams/02-deployment/diagram.html",
+    "sha256": "ddd552f4efb55cac3101e165230325f38bc3964092d048791c6d23108acf2503",
+    "bytes": 854978
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "pass"
+  },
+  "diagnostics": [],
+  "diagnosticSummary": {
+    "total": 0,
+    "shown": 0,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "/home/thanhdat/code/tdtu/TDTU-CLOUD-2026/docs/diagrams/02-deployment/review-2/diagram.finalize.json",
+    "summaryReceipt": "/home/thanhdat/code/tdtu/TDTU-CLOUD-2026/docs/diagrams/02-deployment/review-2/diagram.finalize-summary.json",
+    "browserCheckReceipt": "/home/thanhdat/code/tdtu/TDTU-CLOUD-2026/docs/diagrams/02-deployment/review-2/diagram.browser-check.json"
+  },
+  "update": {
+    "status": "current",
+    "installedVersion": "3.2.0",
+    "availableVersion": "3.2.0",
+    "releaseNotes": null,
+    "checkedAt": "2026-11-09T07:20:37.106Z",
+    "source": "cache",
+    "noticeRequired": false,
+    "noticeText": null
+  },
+  "visualReview": "not-requested",
+  "durationMs": 2910,
+  "browserCheck": {
+    "requested": true,
+    "ran": true
+  }
+}

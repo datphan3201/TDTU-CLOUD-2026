@@ -1,0 +1,182 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "JWT — luồng mục tiêu AUTH-01, chưa triển khai",
+    "locale": "en",
+    "output": "docs/diagrams/03-jwt/diagram.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/datphan3201/TDTU-CLOUD-2026.git",
+      "revision": "e786a4f4c98b9e87c1d094bb3e24ba4186ccd40e"
+    }
+  },
+  "participants": [
+    {
+      "id": "client",
+      "type": "external",
+      "label": "Client lab / curl",
+      "sublabel": "Public client flask-app",
+      "sources": [
+        {
+          "path": "authentication-identity-server/README.md",
+          "line": 39,
+          "end_line": 54
+        }
+      ]
+    },
+    {
+      "id": "gw",
+      "type": "backend",
+      "label": "Gateway",
+      "sublabel": "/auth/ và /api/",
+      "sources": [
+        {
+          "path": "api-gateway-proxy-server/nginx.conf",
+          "line": 30,
+          "end_line": 40
+        }
+      ]
+    },
+    {
+      "id": "kc",
+      "type": "security",
+      "label": "Keycloak",
+      "sublabel": "realm_<STUDENT_ID>",
+      "sources": [
+        {
+          "path": "authentication-identity-server/README.md",
+          "line": 11,
+          "end_line": 27
+        }
+      ]
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "Flask /secure",
+      "sublabel": "TODO AUTH-01",
+      "sources": [
+        {
+          "path": "authentication-identity-server/README.md",
+          "line": 15,
+          "end_line": 16
+        },
+        {
+          "path": "docs/ARCHITECTURE.md",
+          "line": 65,
+          "end_line": 73
+        },
+        {
+          "path": "application-backend-server/app.py",
+          "line": 34,
+          "end_line": 34
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "id": "token",
+      "from": "client",
+      "to": "gw",
+      "y": 160,
+      "label": "POST /auth/.../token",
+      "variant": "security",
+      "note": "Lab: grant_type=password; client_id=flask-app; user sv01/sv02."
+    },
+    {
+      "id": "forward",
+      "from": "gw",
+      "to": "kc",
+      "y": 235,
+      "label": "Chuyển tiếp /auth/",
+      "variant": "security"
+    },
+    {
+      "id": "signed",
+      "from": "kc",
+      "to": "gw",
+      "y": 275,
+      "label": "Access token RS256",
+      "variant": "return"
+    },
+    {
+      "id": "tokenback",
+      "from": "gw",
+      "to": "client",
+      "y": 315,
+      "label": "Token về client",
+      "variant": "return"
+    },
+    {
+      "id": "secure",
+      "from": "client",
+      "to": "gw",
+      "y": 365,
+      "label": "GET /api/secure + Bearer token",
+      "variant": "emphasis"
+    },
+    {
+      "id": "strip",
+      "from": "gw",
+      "to": "api",
+      "y": 405,
+      "label": "Bỏ /api/ → /secure",
+      "variant": "emphasis"
+    },
+    {
+      "id": "jwks",
+      "from": "api",
+      "to": "kc",
+      "y": 455,
+      "label": "GET JWKS khi cần",
+      "variant": "security",
+      "note": "Lấy khóa qua tên service nội bộ; iss vẫn là URL public qua gateway."
+    },
+    {
+      "id": "keys",
+      "from": "kc",
+      "to": "api",
+      "y": 535,
+      "label": "Khóa công khai",
+      "variant": "return",
+      "note": "API kiểm tra RS256, iss, aud=flask-app và exp; không gọi Keycloak để xác minh từng token."
+    },
+    {
+      "id": "result",
+      "from": "api",
+      "to": "gw",
+      "y": 625,
+      "label": "Hợp lệ: 200 · không hợp lệ: 401",
+      "variant": "return",
+      "note": "Thiếu token cũng trả 401; lỗi lấy JWKS có thể trả 503."
+    },
+    {
+      "id": "response",
+      "from": "gw",
+      "to": "client",
+      "y": 705,
+      "label": "Trả kết quả HTTP",
+      "variant": "return"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Luồng lab dự kiến",
+      "items": [
+        "Sơ đồ mô tả Direct access grants theo README lab, không phải login từ trang Blog.",
+        "Client phải được bật flow phù hợp; public client không dùng client secret."
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Trạng thái và điều kiện",
+      "items": [
+        "Hiện /secure trả 501; chỉ nghiệm thu sau khi có ca token đúng và các ca 401.",
+        "JWKS có thể cache; thứ tự trong sơ đồ minh họa lúc cần lấy khóa."
+      ]
+    }
+  ]
+}

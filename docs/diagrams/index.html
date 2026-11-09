@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="vi">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MyMiniCloud — Bộ sơ đồ kiến trúc</title>
+<style>
+:root{color-scheme:light dark;--bg:#f6f4ef;--fg:#202b33;--muted:#586570;--line:#d8dedb;--card:#fff;--accent:#006957}
+@media(prefers-color-scheme:dark){:root{--bg:#111a20;--fg:#edf3ee;--muted:#b1c0c8;--line:#35454e;--card:#1b282f;--accent:#7fe0bd}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.65 system-ui,sans-serif}main{max-width:1040px;margin:auto;padding:64px 24px}header{border-bottom:1px solid var(--line);padding-bottom:28px}small{color:var(--accent);font-weight:700;letter-spacing:.08em}h1{font-size:clamp(30px,5vw,48px);line-height:1.15;margin:16px 0}p{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin:30px 0}article{padding:24px;border:1px solid var(--line);border-radius:12px;background:var(--card)}article h2{font-size:21px;margin:10px 0}article p{font-size:15px}a{color:var(--accent);text-underline-offset:4px}article a{font-weight:650}a:focus-visible{outline:3px solid var(--accent);outline-offset:5px}.tag{font-size:12px;color:var(--muted)}footer{border-top:1px solid var(--line);padding-top:24px;font-size:14px}code{font-size:.9em}
+</style>
+<main>
+<header><small>TDTU CLOUD 2026 · ARCHIFY 3.2</small><h1>MyMiniCloud<br>Bộ sơ đồ kiến trúc</h1><p>Kiến trúc nền local và thiết kế các phần mở rộng. Chọn một sơ đồ để xem tương tác, đọc nguồn code hoặc xuất ảnh/SVG.</p></header>
+<div class="grid">
+<article><span class="tag">01 · HIỆN TẠI</span><h2>Kiến trúc tổng thể</h2><p>Gateway, Web, Flask, Keycloak, MariaDB, MinIO, DNS và giám sát. Đường SQL nét đứt là phần tích hợp dự kiến.</p><a href="01-overview/diagram.html">Mở sơ đồ tổng thể →</a></article>
+<article><span class="tag">02 · TRIỂN KHAI LOCAL</span><h2>Docker, mạng và volume</h2><p>10 container, địa chỉ trong cloud-net, cổng host và 5 named volume. Có ghi chú MariaDB local dùng cổng 3307.</p><a href="02-deployment/diagram.html">Mở sơ đồ triển khai →</a></article>
+<article><span class="tag">03 · MỤC TIÊU AUTH-01</span><h2>Luồng xác thực JWT</h2><p>Client lab lấy token qua gateway; Flask lấy JWKS và kiểm tra RS256, issuer, audience, expiration. Chưa phải chức năng đã hoàn tất.</p><a href="03-jwt/diagram.html">Mở luồng JWT →</a></article>
+<article><span class="tag">04 · HIỆN CÓ + MỞ RỘNG</span><h2>Prometheus và Grafana</h2><p>Luồng node metrics đang có; luồng web metrics dự kiến qua Nginx Exporter. Mũi tên chỉ bên chủ động gửi yêu cầu.</p><a href="04-monitoring/diagram.html">Mở sơ đồ giám sát →</a></article>
+<article><span class="tag">05 · MỤC TIÊU LB-01</span><h2>Cân bằng tải hai web</h2><p>Nginx Round Robin cho hai web; API và Keycloak giữ route riêng. Hai instance và header dùng để kiểm chứng phân phối.</p><a href="05-load-balancing/diagram.html">Mở sơ đồ cân bằng tải →</a></article>
+</div>
+<footer><p>Mỗi HTML hoạt động độc lập. Trong sơ đồ, dùng công cụ Export để xuất SVG/PNG; chọn Still nếu muốn dừng chuyển động. Nội dung bằng tiếng Việt, thanh công cụ Archify bằng tiếng Anh.</p><p>Các sơ đồ tham chiếu nguồn tại commit <code>e786a4f</code>; thay đổi local chưa commit được phân biệt trong <a href="README.md">hướng dẫn và ghi chú nguồn</a>. EC2 là bước triển khai tiếp theo, chưa được trình bày như môi trường đã nghiệm thu.</p></footer>
+</main>
+</html>

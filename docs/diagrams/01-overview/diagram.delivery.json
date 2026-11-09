@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "78f9b873-c29b-45c9-b814-fbe6513cde1d",
+  "status": "current",
+  "command": "deliver",
+  "type": "architecture",
+  "input": "/home/thanhdat/code/tdtu/TDTU-CLOUD-2026/docs/diagrams/01-overview/candidate.json",
+  "output": "/home/thanhdat/code/tdtu/TDTU-CLOUD-2026/docs/diagrams/01-overview/diagram.html",
+  "specification": {
+    "sha256": "5ef1fba7a6683fe7b06ba3df0c026155dd11b3bb5afa58e798186a4c73b1fd9e",
+    "bytes": 6842
+  },
+  "artifact": {
+    "sha256": "b6fadc9b88abf82ae467405021b9fedc2938666dfc414033beb2aff0638f70f3",
+    "bytes": 852870
+  }
+}

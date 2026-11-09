@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "959abc2b-df7e-40fe-90ce-396f73198181",
+  "status": "current",
+  "command": "deliver",
+  "type": "architecture",
+  "input": "/home/thanhdat/code/tdtu/TDTU-CLOUD-2026/docs/diagrams/05-load-balancing/candidate.json",
+  "output": "/home/thanhdat/code/tdtu/TDTU-CLOUD-2026/docs/diagrams/05-load-balancing/diagram.html",
+  "specification": {
+    "sha256": "67e11f302c1afcf9166fb52fe55fa5708a9ffcd5bbb224a3b55741f27f83256a",
+    "bytes": 4190
+  },
+  "artifact": {
+    "sha256": "970ccb0a903a51840f2bd185ff44b95f6652219bbb5c52d0b55e5e29521da34a",
+    "bytes": 839026
+  }
+}

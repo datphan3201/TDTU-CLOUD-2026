@@ -1,0 +1,203 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Giám sát — hiện có node, dự kiến thêm web",
+    "locale": "en",
+    "output": "docs/diagrams/04-monitoring/diagram.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/datphan3201/TDTU-CLOUD-2026.git",
+      "revision": "e786a4f4c98b9e87c1d094bb3e24ba4186ccd40e"
+    }
+  },
+  "components": [
+    {
+      "id": "graf",
+      "type": "frontend",
+      "label": "Grafana",
+      "sublabel": ":3000 · hiển thị dashboard",
+      "pos": [
+        40,
+        240
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "sources": [
+        {
+          "path": "monitoring-grafana-dashboard-server/provisioning/datasources/prometheus.yml",
+          "line": 1,
+          "end_line": 9
+        }
+      ]
+    },
+    {
+      "id": "prom",
+      "type": "backend",
+      "label": "Prometheus",
+      "sublabel": ":9090 · chu kỳ 15s",
+      "pos": [
+        350,
+        240
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "sources": [
+        {
+          "path": "monitoring-prometheus-server/prometheus.yml",
+          "line": 1,
+          "end_line": 12
+        },
+        {
+          "path": "monitoring-prometheus-server/prometheus.web.yml.example",
+          "line": 1,
+          "end_line": 13
+        }
+      ]
+    },
+    {
+      "id": "node",
+      "type": "backend",
+      "label": "Node Exporter",
+      "sublabel": ":9100 · hiện có",
+      "pos": [
+        660,
+        60
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "sources": [
+        {
+          "path": "docker-compose.yml",
+          "line": 145,
+          "end_line": 162
+        }
+      ]
+    },
+    {
+      "id": "linux",
+      "type": "cloud",
+      "label": "Môi trường Linux",
+      "sublabel": "/proc · /sys · rootfs",
+      "pos": [
+        970,
+        60
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "sources": [
+        {
+          "path": "docker-compose.yml",
+          "line": 149,
+          "end_line": 159
+        },
+        {
+          "path": "docs/ARCHITECTURE.md",
+          "line": 75,
+          "end_line": 79
+        }
+      ]
+    },
+    {
+      "id": "exporter",
+      "type": "backend",
+      "label": "Nginx Exporter",
+      "sublabel": ":9113 · TODO MON-01",
+      "pos": [
+        660,
+        420
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "sources": [
+        {
+          "path": "monitoring-prometheus-server/compose.web-metrics.yml.example",
+          "line": 3,
+          "end_line": 13
+        }
+      ]
+    },
+    {
+      "id": "web",
+      "type": "frontend",
+      "label": "Web Nginx",
+      "sublabel": ":8082/stub_status · đã có",
+      "pos": [
+        970,
+        420
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "sources": [
+        {
+          "path": "web-frontend-server/conf.default",
+          "line": 23,
+          "end_line": 28
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "from": "graf",
+      "to": "prom",
+      "label": "Truy vấn PromQL",
+      "variant": "default"
+    },
+    {
+      "from": "prom",
+      "to": "node",
+      "label": "Scrape /metrics",
+      "variant": "default"
+    },
+    {
+      "from": "node",
+      "to": "linux",
+      "label": "Đọc metrics",
+      "variant": "default"
+    },
+    {
+      "from": "prom",
+      "to": "exporter",
+      "label": "Scrape · TODO",
+      "variant": "dashed"
+    },
+    {
+      "from": "exporter",
+      "to": "web",
+      "label": "Đọc stub_status · TODO",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Hiện có",
+      "items": [
+        "Grafana truy vấn Prometheus; Prometheus chủ động scrape Node Exporter.",
+        "stub_status đã có nhưng cần exporter chuyển sang định dạng Prometheus."
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Phần mở rộng MON-01 / GRAF-01",
+      "items": [
+        "Nét đứt là đường giám sát web dự kiến từ các file .example.",
+        "Nghiệm thu: up=1, nginx_up=1 và nginx_http_requests_total tăng.",
+        "Dashboard cá nhân gồm CPU, RAM và Network; node network thuộc namespace exporter."
+      ]
+    }
+  ]
+}
