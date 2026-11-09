@@ -1,10 +1,54 @@
 <!doctype html>
 <html lang="vi">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>MyMiniCloud</title></head>
-<body>
-  <h1>MyMiniCloud – Home</h1>
-  <p>Khung thực hành hệ thống cloud. Hãy thay bằng nội dung của bạn.</p>
-  <nav><a href="/blog/">Blog</a> · <a href="/api/hello">API qua gateway</a></nav>
-  <!-- TODO WEB-01: thêm thông tin cá nhân và danh sách 3 bài viết có hyperlink. -->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blog</title>
+  <link rel="stylesheet" href="/assets/style.css">
+  <link rel="stylesheet" href="/assets/home.css">
+</head>
+<body class="home-page">
+  <header>
+    <nav>
+      <a href="/">Trang chủ</a>
+      <a href="/blog/">Blog</a>
+    </nav>
+
+    <h1>Blog</h1>
+    <p>Traveling, Basketball and AI</p>
+    <p>Tác giả:</p>
+    <p>Phan Trần Minh Quang - Phan Thanh Đạt - Mai Hoàng Thái</p>
+  </header>
+
+  <main class="cards">
+    <section class="card">
+      <img src="/assets/images/travel.jpg" alt="Traveling">
+      <div class="card-content">
+        <p>Du lịch</p>
+        <h2><a href="/blog/blog1.html">Vũng Tàu</a></h2>
+        <p>Một chuyến đi để tận hưởng thiên nhiên.</p>
+      </div>
+    </section>
+
+    <section class="card">
+      <img src="/assets/images/basketball.jpg" alt="Basketball">
+      <div class="card-content">
+        <p>Thể thao</p>
+        <h2><a href="/blog/blog2.html">Basketball</a></h2>
+        <p>Những điều bóng rổ mang lại cho sức khỏe và tinh thần.</p>
+      </div>
+    </section>
+
+    <section class="card">
+      <img src="/assets/images/ai.jpg" alt="AI">
+      <div class="card-content">
+        <p>Công nghệ</p>
+        <h2><a href="/blog/blog3.html">AI</a></h2>
+        <p>AI trong đời sống.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>Blog · MyMiniCloud</footer>
 </body>
 </html>

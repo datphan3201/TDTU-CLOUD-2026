@@ -1,0 +1,181 @@
+/* Styles scoped to the homepage; article pages use style.css. */
+.home-page {
+  background: radial-gradient(ellipse at 85% 0%, #dce9f7 0, transparent 48%), #f7f8fc;
+  color: #172943;
+  min-height: 100vh;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+.home-page > header,
+.home-page > main,
+.home-page > footer {
+  width: min(1160px, calc(100% - 64px));
+}
+.home-page > header {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  column-gap: 56px;
+  padding: 0 0 48px;
+}
+.home-page nav {
+  grid-column: 1 / -1;
+  padding: 24px 0;
+  margin-bottom: 46px;
+  border-bottom: 1px solid #dce3ed;
+  gap: 10px;
+}
+.home-page nav a {
+  color: #5c6c83;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 9px 20px;
+  border-radius: 100px;
+  transition: background .2s, color .2s;
+}
+.home-page nav a:first-child {
+  background: #172943;
+  color: white;
+}
+.home-page nav a:hover {
+  background: #e0e8f3;
+  color: #172943;
+}
+.home-page h1 {
+  grid-column: 1;
+  grid-row: 2 / 4;
+  align-self: center;
+  margin: 0;
+  font-size: clamp(64px, 8vw, 100px);
+  font-weight: 750;
+  letter-spacing: -6px;
+  line-height: 1.15;
+}
+.home-page header > p {
+  margin: 0;
+}
+.home-page header > p:first-of-type {
+  grid-column: 1;
+  grid-row: 4 / 7;
+  align-self: start;
+  font-size: 18px;
+  color: #60718a;
+  padding-top: 12px;
+}
+.home-page header > p:nth-of-type(2) {
+  grid-column: 2;
+  grid-row: 2;
+  color: #687a92;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  padding: 6px 0 12px;
+}
+.home-page header > p:nth-of-type(n+3) {
+  grid-column: 2;
+  padding: 12px 0;
+  font-size: 14px;
+  border-bottom: 1px solid #dce3ed;
+}
+.home-page .cards {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 26px;
+  align-items: stretch;
+}
+.home-page .card {
+  border: 1px solid #e4e9f1;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px #1f355907;
+  transition: transform .25s, box-shadow .25s;
+  min-width: 0;
+}
+.home-page .card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 36px #1f355914;
+}
+.home-page .card img {
+  height: auto;
+  aspect-ratio: 1.48;
+  object-fit: cover;
+  border-bottom: 1px solid #edf0f5;
+}
+.home-page .card-content {
+  padding: 25px 26px 30px;
+}
+.home-page .card-content > p:first-child {
+  display: inline-block;
+  margin: 0 0 18px;
+  padding: 4px 11px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 650;
+  color: #31715e;
+  background: #eaf5ee;
+}
+.home-page .card:nth-child(2) .card-content > p:first-child {
+  color: #a45a2c;
+  background: #fff0e5;
+}
+.home-page .card:nth-child(3) .card-content > p:first-child {
+  color: #6061a4;
+  background: #eeedfc;
+}
+.home-page .card h2 {
+  margin: 0 0 12px;
+  font-size: 29px;
+  font-weight: 700;
+  letter-spacing: -.8px;
+  line-height: 1.3;
+}
+.home-page .card h2 a {
+  color: #172943;
+  text-decoration: none;
+  text-underline-offset: 5px;
+}
+.home-page .card h2 a:hover {
+  color: #356da5;
+  text-decoration: underline;
+}
+.home-page .card-content > p:last-child {
+  font-size: 14px;
+  line-height: 1.8;
+  color: #68788d;
+  margin: 0;
+}
+.home-page > footer {
+  margin-top: 52px;
+  padding: 24px 0 30px;
+  border-top: 1px solid #dce3ed;
+  font-size: 12px;
+  color: #7b899b;
+}
+.home-page a:focus-visible {
+  outline: 3px solid #4389c5;
+  outline-offset: 5px;
+}
+@media (max-width: 900px) {
+  .home-page > header { column-gap: 24px; }
+  .home-page header > p:nth-of-type(n+3) { font-size: 12px; }
+  .home-page .cards { gap: 16px; }
+  .home-page .card-content { padding: 20px; }
+}
+@media (max-width: 650px) {
+  .home-page > header,
+  .home-page > main,
+  .home-page > footer { width: calc(100% - 36px); }
+  .home-page > header { display: flex; flex-direction: column; padding-bottom: 30px; }
+  .home-page nav { margin-bottom: 24px; padding: 18px 0; }
+  .home-page h1 { align-self: flex-start; font-size: 72px; letter-spacing: -4px; }
+  .home-page header > p:first-of-type { font-size: 16px; padding-top: 10px; margin-bottom: 25px; }
+  .home-page header > p:nth-of-type(2) { padding-bottom: 6px; }
+  .home-page header > p:nth-of-type(n+3) { font-size: 13px; padding: 9px 0; }
+  .home-page .cards { grid-template-columns: 1fr; gap: 24px; }
+  .home-page .card img { aspect-ratio: 1.65; }
+  .home-page .card-content { padding: 24px; }
+  .home-page > footer { margin-top: 34px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-page .card,
+  .home-page nav a { transition: none; }
+  .home-page .card:hover { transform: none; }
+}

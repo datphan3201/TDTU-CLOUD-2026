@@ -1,9 +1,55 @@
 <!doctype html>
 <html lang="vi">
-<head><meta charset="utf-8"><title>MyMiniCloud Blog</title></head>
-<body>
-  <h1>MyMiniCloud – Blog</h1>
-  <p>TODO WEB-01: tạo blog1.html, blog2.html, blog3.html, mỗi bài có ảnh và liên kết quay lại.</p>
-  <a href="/">Trang chủ</a>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bài viết — Egew’s Blog</title>
+  <link rel="stylesheet" href="/assets/style.css">
+  <link rel="stylesheet" href="/assets/blog-list.css">
+</head>
+<body class="blog-list-page">
+  <header>
+    <nav>
+      <a href="/">Trang chủ</a>
+      <a href="/blog/">Blog</a>
+    </nav>
+    <h1>Tất cả bài viết</h1>
+  </header>
+
+  <main>
+    <article>
+      <section class="blog-entry">
+        <a class="entry-image" href="/blog/blog1.html" tabindex="-1" aria-hidden="true">
+          <img src="/assets/images/travel.jpg" alt="" loading="lazy">
+        </a>
+        <div class="entry-content">
+      <h2><a href="/blog/blog1.html">Vũng Tàu</a></h2>
+      <p>Du lịch, thiên nhiên và những trải nghiệm.</p>
+        </div>
+      </section>
+
+      <section class="blog-entry">
+        <a class="entry-image" href="/blog/blog2.html" tabindex="-1" aria-hidden="true">
+          <img src="/assets/images/basketball.jpg" alt="" loading="lazy">
+        </a>
+        <div class="entry-content">
+      <h2><a href="/blog/blog2.html">Basketball</a></h2>
+      <p>Rèn luyện bản thân qua thể thao.</p>
+        </div>
+      </section>
+
+      <section class="blog-entry">
+        <a class="entry-image" href="/blog/blog3.html" tabindex="-1" aria-hidden="true">
+          <img src="/assets/images/ai.jpg" alt="" loading="lazy">
+        </a>
+        <div class="entry-content">
+      <h2><a href="/blog/blog3.html">AI</a></h2>
+      <p>Tìm hiểu cách sử dụng công nghệ AI.</p>
+        </div>
+      </section>
+    </article>
+  </main>
+
+  <footer>Blog · MyMiniCloud</footer>
 </body>
 </html>

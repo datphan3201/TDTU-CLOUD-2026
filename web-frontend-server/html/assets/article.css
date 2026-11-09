@@ -1,0 +1,134 @@
+/* Applied only to the three individual blog posts. */
+.article-page {
+  background: radial-gradient(ellipse at top right, #e1eaf6, transparent 55%), #f7f8fc;
+  color: #172943;
+  font-family: "Segoe UI", Arial, sans-serif;
+  min-height: 100vh;
+}
+.article-page > header,
+.article-page > main,
+.article-page > footer {
+  width: min(1000px, calc(100% - 64px));
+}
+.article-page > header { padding: 24px 0 34px; }
+.article-page nav { gap: 10px; padding-bottom: 24px; border-bottom: 1px solid #dce3ed; }
+.article-page nav a {
+  text-decoration: none;
+  color: #60718a;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 9px 20px;
+  border-radius: 100px;
+  transition: background .2s;
+}
+.article-page nav a:last-child { background: #172943; color: white; }
+.article-page nav a:hover { background: #e0e8f3; color: #172943; }
+.article-page article {
+  display: flow-root;
+  max-width: 900px;
+  padding: 44px 48px;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  box-shadow: 0 12px 40px #1f355909;
+}
+.article-page article > p:first-child {
+  display: table;
+  margin: 0 0 14px;
+  padding: 5px 13px;
+  background: #eaf5ee;
+  color: #31715e;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .4px;
+}
+.article-basketball article > p:first-child { background: #fff0e5; color: #a45a2c; }
+.article-ai article > p:first-child { background: #eeedfc; color: #6061a4; }
+.article-page h1 {
+  margin: 0 0 32px;
+  padding-bottom: 25px;
+  border-bottom: 1px solid #e5eaf1;
+  font-size: clamp(36px, 5vw, 54px);
+  line-height: 1.15;
+  letter-spacing: -1.8px;
+}
+.article-page h2 {
+  font-size: 23px;
+  line-height: 1.45;
+  letter-spacing: -.45px;
+  margin: 26px 0 12px;
+}
+.article-page article > p:not(:first-child) {
+  font-size: 16px;
+  line-height: 1.9;
+  color: #5e6e82;
+  margin: 0 0 24px;
+  overflow-wrap: break-word;
+}
+.article-page article > img {
+  border-radius: 12px;
+  border: 1px solid #e5eaf1;
+}
+.article-travel article > img,
+.article-basketball article > img {
+  width: 25%;
+  height: auto;
+  float: right;
+  margin: 0 0 28px 32px;
+}
+/* Keep the bottom 80% of the original 947 × 2048 travel image visible. */
+.article-travel article > img {
+  width: 30%;
+  aspect-ratio: 947 / 1638.4;
+  object-fit: cover;
+  object-position: center bottom;
+}
+/* Keep the top 85% of the original 946 × 2047 image visible. */
+.article-basketball article > img {
+  aspect-ratio: 946 / 1739.95;
+  object-fit: cover;
+  object-position: center top;
+}
+.article-ai article > img {
+  width: min(100%, 560px);
+  margin: 0 auto 32px;
+}
+.article-page article > a:last-child {
+  display: table;
+  clear: both;
+  padding: 11px 18px;
+  margin-top: 28px;
+  background: #f0f4f9;
+  border: 1px solid #e0e7f0;
+  border-radius: 8px;
+  color: #365b82;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  transition: background .2s;
+}
+.article-page article > a:last-child:hover { background: #e1eaf5; }
+.article-page > footer {
+  border-top: 1px solid #dce3ed;
+  margin-top: 40px;
+  padding: 22px 0 28px;
+  color: #7b899b;
+  font-size: 12px;
+}
+.article-page a:focus-visible { outline: 3px solid #4389c5; outline-offset: 5px; }
+@media (max-width: 650px) {
+  .article-page > header,
+  .article-page > main,
+  .article-page > footer { width: calc(100% - 28px); }
+  .article-page > header { padding: 18px 0 22px; }
+  .article-page nav a { font-size: 12px; padding: 8px 14px; }
+  .article-page article { padding: 26px 20px; border-radius: 16px; }
+  .article-page h1 { font-size: 38px; margin-bottom: 24px; padding-bottom: 20px; }
+  .article-page h2 { font-size: 20px; }
+  .article-page article > p:not(:first-child) { font-size: 15px; }
+  .article-travel article > img,
+  .article-basketball article > img { margin-left: 18px; border-radius: 7px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .article-page a { transition: none; }
+}
