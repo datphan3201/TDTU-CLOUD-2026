@@ -27,7 +27,7 @@ Phân công đã thống nhất ngày 09/11/2026. Nhóm xác nhận đã hoàn t
 | MON-01 | Demonwan | web nền | node UP, web exporter UP, nginx_up=1, request counter tăng | Có scrape node |
 | GRAF-01 | Demonwan | node metrics | System Health of MSSV: CPU/RAM/Network + JSON export | Có datasource; dashboard mở rộng chưa nghiệm thu |
 | GW-01 | Newton | APP-01 | /student/ trả cùng dữ liệu /api/student | Chưa làm |
-| LB-01 | Egew | web + gateway, phối hợp Newton | 2 web có nhãn khác nhau, Round Robin, request tới cả hai | Chưa làm |
+| LB-01 | Egew | web + gateway, phối hợp Newton | 2 web có nhãn khác nhau, Round Robin, request tới cả hai | Đạt local với override LB; xem api-gateway-proxy-server/LB_LOCAL_ACCEPTANCE.md; chờ ghép GW-01/monitoring và nghiệm thu EC2 |
 | DEPLOY-01 | Newton điều phối; cả nhóm kiểm thử | nghiệm thu local | Docker Hub + EC2 + log kiểm thử từng phần | Chưa làm |
 | REPORT-01 | Cả nhóm | minh chứng từng task | mỗi người viết phần phụ trách, cùng ghép báo cáo 5 chương và video | Có dàn ý |
 

@@ -83,3 +83,24 @@ Nếu config mới có lỗi, `nginx -t` thất bại: sửa trước khi reload
 **Tiêu chí bàn giao:** route đúng path và status; auth redirect giữ URL public; Round Robin luân phiên hai upstream đang healthy. Hai request tiếp nhau thường luân phiên trong điều kiện kiểm thử yên tĩnh; health probes/traffic khác có thể ảnh hưởng thứ tự nhìn thấy.
 
 **Minh chứng:** config upstream/routes, JSON route mới, sáu request cùng header và hai trang có nhãn instance vào `docs/evidence/09-gateway/`.
+
+## Cấu hình đã triển khai — LB-01-v1
+
+Repo đã có `compose.lb.yml`, `nginx.lb.conf` và hai trang chủ có nhãn tại `lb-pages/`; không cần sao chép lại file mẫu để chạy bản này.
+
+```bash
+# Build image dùng chung một lần, tránh hai service cùng build một tag.
+docker compose -f docker-compose.yml -f api-gateway-proxy-server/compose.lb.yml build web-frontend-server
+# Dùng image sẵn có của API/Keycloak và các dependency khác.
+docker compose -f docker-compose.yml -f api-gateway-proxy-server/compose.lb.yml up -d --no-build web-frontend-server web-frontend-server2 api-gateway-proxy-server
+```
+
+Trên máy mới, cần build API (`docker compose build application-backend-server`) và tải image dependency trước khi dùng `--no-build`. Chạy LB không yêu cầu build lại MinIO. Nếu đang dùng monitoring override, ghép đủ bộ `-f` đã thống nhất với nhóm.
+
+- Gateway `http://localhost/`: chia request theo Round Robin; có `X-Web-Instance`, `X-Upstream-Addr` và `Cache-Control: no-store` cho route web.
+- Web1 trực tiếp `http://localhost:8080/`; web2 trực tiếp `http://localhost:8086/`. Cổng debug web2 chỉ bind LOCAL_BIND_ADDRESS (mặc định loopback).
+- Hai web dùng cùng image/blog/assets; riêng index.html được bind-mount từ `lb-pages/index1.html` và `index2.html` để có nhãn hiển thị khác nhau. Khi thay trang chủ, cập nhật cả hai bản sao.
+- `stub_status` cổng nội bộ 8082 của web vẫn được giữ để tích hợp exporter.
+- Khi route Gateway nền thay đổi, đối chiếu và cập nhật `nginx.lb.conf` trước khi tích hợp. GW-01 `/student/` còn chờ ở thời điểm kiểm tra phiên bản này.
+
+Kết quả và giới hạn kiểm tra: [LB_LOCAL_ACCEPTANCE.md](LB_LOCAL_ACCEPTANCE.md). Dùng cùng bộ `-f` cho các lệnh vận hành tiếp theo; nếu web bị recreate, kiểm tra và reload Gateway khi cần để upstream DNS cập nhật.

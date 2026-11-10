@@ -37,7 +37,8 @@ Nét đứt là tích hợp còn TODO. DNS Bind9 phục vụ zone riêng; Docker
 | monitoring-node-exporter-server | 10.10.10.61 | 9100 |
 | monitoring-grafana-dashboard-server | 10.10.10.70 | 3000 |
 | api-gateway-proxy-server | 10.10.10.80 | 80 |
-| Dự kiến web thứ hai / web exporter | .11 / .62 | 80 / 9113; chưa tạo |
+| web-frontend-server2 (override LB) | 10.10.10.11 | 80; host 8086 để xem riêng, mặc định loopback |
+| Web exporter (override monitoring riêng) | 10.10.10.62 | 9113; không tự bật bởi LB |
 
 IP tĩnh dùng để bản ghi DNS của bài lab trỏ đúng container. Các kết nối ứng dụng vẫn dùng **tên service**, không hardcode IP. Một vai trò monitoring có Node Exporter hỗ trợ; thêm web exporter và bản sao web sẽ tăng số container lên 12 nhưng vẫn giữ 9 vai trò.
 
@@ -95,3 +96,9 @@ Grafana hiển thị metrics từ Prometheus, đáp ứng lựa chọn visualiza
 - [Grafana provisioning](https://grafana.com/docs/grafana/latest/administration/provisioning/): datasource và dashboard từ file.
 - [Compose merge rules](https://docs.docker.com/reference/compose-file/merge/): override mount theo cùng target trong container.
 - [MinIO releases](https://github.com/minio/minio/releases/tag/RELEASE.2025-04-22T22-12-26Z): phiên bản lab được ghim để demo Console theo đề.
+
+## LB-01-v1 — override cân bằng tải
+
+Dùng `api-gateway-proxy-server/compose.lb.yml` cùng Compose nền để bật web2 và mount `nginx.lb.conf` vào Gateway. Instance đầu giữ service/container name web-frontend-server, thêm hostname/alias web-frontend-server1. Gateway `/` dùng upstream web_pool với hai web, Round Robin mặc định. Các route API/auth nền được giữ; `/student/` chưa triển khai và cần ghép khi Newton bàn giao GW-01.
+
+Hai instance dùng cùng image web; trang chủ mount từ lb-pages/index1.html và index2.html có nhãn khác nhau. Web1 truy cập trực tiếp cổng 8080, web2 cổng 8086 theo LOCAL_BIND_ADDRESS. Hai cổng này dùng xem từng instance, Gateway mới là đường kiểm tra cân bằng tải. Cổng stub_status nội bộ 8082 giữ nguyên. File override monitoring phải truyền riêng khi nhóm tích hợp; nghiệm thu LB local chưa xác nhận cấu hình ghép monitoring/EC2.
