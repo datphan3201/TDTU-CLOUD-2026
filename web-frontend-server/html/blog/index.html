@@ -6,6 +6,7 @@
   <title>Bài viết — Egew’s Blog</title>
   <link rel="stylesheet" href="/assets/style.css">
   <link rel="stylesheet" href="/assets/blog-list.css">
+  <script src="/assets/blog-search.js" defer></script>
 </head>
 <body class="blog-list-page">
   <header>
@@ -17,37 +18,63 @@
   </header>
 
   <main>
-    <article>
-      <section class="blog-entry">
+    <form class="blog-tools" id="blog-tools" role="search" aria-label="Tìm bài viết" hidden>
+      <div class="search-field">
+        <label for="blog-search">Tìm theo tên bài viết</label>
+        <input type="search" id="blog-search" name="q" placeholder="Ví dụ: Vũng Tàu" autocomplete="off" aria-controls="blog-results">
+      </div>
+      <div class="category-field">
+        <label for="blog-category">Thể loại</label>
+        <select id="blog-category" name="category" aria-controls="blog-results">
+          <option value="all">Tất cả thể loại</option>
+          <option value="travel">Du lịch</option>
+          <option value="sports">Thể thao</option>
+          <option value="technology">Công nghệ</option>
+        </select>
+      </div>
+      <button type="reset" class="reset-filters">Xóa bộ lọc</button>
+    </form>
+    <p class="results-count" id="blog-results-count" role="status" aria-live="polite" aria-atomic="true" hidden></p>
+    <noscript><p>Bật JavaScript để tìm kiếm và lọc bài viết. Bạn vẫn có thể đọc tất cả bài bên dưới.</p></noscript>
+    <article id="blog-results" aria-label="Danh sách bài viết">
+      <section class="blog-entry" data-category="travel">
         <a class="entry-image" href="/blog/blog1.html" tabindex="-1" aria-hidden="true">
           <img src="/assets/images/travel.jpg" alt="" loading="lazy">
         </a>
         <div class="entry-content">
+      <span class="entry-category">Du lịch</span>
       <h2><a href="/blog/blog1.html">Vũng Tàu</a></h2>
       <p>Du lịch, thiên nhiên và những trải nghiệm.</p>
         </div>
       </section>
 
-      <section class="blog-entry">
+      <section class="blog-entry" data-category="sports">
         <a class="entry-image" href="/blog/blog2.html" tabindex="-1" aria-hidden="true">
           <img src="/assets/images/basketball.jpg" alt="" loading="lazy">
         </a>
         <div class="entry-content">
+      <span class="entry-category">Thể thao</span>
       <h2><a href="/blog/blog2.html">Basketball</a></h2>
       <p>Rèn luyện bản thân qua thể thao.</p>
         </div>
       </section>
 
-      <section class="blog-entry">
+      <section class="blog-entry" data-category="technology">
         <a class="entry-image" href="/blog/blog3.html" tabindex="-1" aria-hidden="true">
           <img src="/assets/images/ai.jpg" alt="" loading="lazy">
         </a>
         <div class="entry-content">
+      <span class="entry-category">Công nghệ</span>
       <h2><a href="/blog/blog3.html">AI</a></h2>
       <p>Tìm hiểu cách sử dụng công nghệ AI.</p>
         </div>
       </section>
     </article>
+    <div class="empty-results" id="blog-empty" hidden>
+      <h2>Chưa tìm thấy bài viết phù hợp</h2>
+      <p>Thử một tên ngắn hơn hoặc chọn thể loại khác nhé.</p>
+      <button type="button" id="clear-empty-filters" class="reset-filters">Xem tất cả bài viết</button>
+    </div>
   </main>
 
   <footer>Blog · MyMiniCloud</footer>

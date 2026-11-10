@@ -35,3 +35,11 @@ Cả 3 bài và ảnh trả 200, không có ảnh hỏng, điều hướng quay 
 **Bàn giao cho:** gateway (đường dẫn giữ nguyên), MON-01 (stub_status), LB-01 (image web và header instance). Image này là ứng viên push Docker Hub.
 
 **Lỗi thường gặp:** đường dẫn tương đối khiến ảnh hỏng ở `/blog/`; thiếu dấu `/` cuối `alias`; sửa source nhưng quên rebuild.
+
+## Tìm kiếm, lọc và gợi ý bài viết
+
+Trang `/blog/` có ô tìm theo tên và bộ lọc thể loại Du lịch/Thể thao/Công nghệ. JavaScript `html/assets/blog-search.js` lọc các thẻ HTML có sẵn ngay trên trình duyệt, kết hợp cả hai điều kiện; hỗ trợ chữ hoa/thường, tên có hoặc không có dấu. Khi không khớp bài nào, hiển thị thông báo và nút xem lại tất cả. Không gửi truy vấn tới API/DB. Nếu JavaScript bị tắt, tất cả bài vẫn đọc được và điều khiển tìm kiếm được ẩn.
+
+Mỗi trang bài viết có hai thẻ đọc tiếp ở cuối trang, trỏ tới hai bài còn lại; đây là gợi ý tĩnh, không cá nhân hóa. Nội dung bài viết và quy tắc cắt ảnh được giữ nguyên. Khi thêm bài mới, cập nhật thẻ danh sách với `data-category`, bổ sung lựa chọn thể loại nếu cần và cập nhật các liên kết gợi ý.
+
+Kiểm tra tại `/blog/`: nhập `vung tau` phải tìm thấy Vũng Tàu; chọn Thể thao chỉ hiện Basketball; tìm AI khi chọn Du lịch phải hiện trạng thái không có kết quả; nút xóa lọc khôi phục cả ba bài. Mở từng bài để kiểm tra phần đọc tiếp không gợi ý lại chính bài đang xem.
