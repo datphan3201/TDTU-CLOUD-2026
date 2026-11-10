@@ -22,7 +22,7 @@ Phân công đã thống nhất ngày 09/11/2026. Nhóm xác nhận đã hoàn t
 | DB-01 | Newton | INT-00 | migration studentdb, 3 bản ghi, quyền SELECT | Có mẫu migration |
 | APP-02 (tích hợp tùy chọn) | Newton | DB-01 | /students-db đọc DB thật | Chưa làm; thực hiện sau DB-01 |
 | AUTH-01 | Newton | API + gateway nền | realm, 2 user, client, /secure xác minh JWT | Chưa làm |
-| OBJ-01 | Egew | INT-00 | bucket/avatar/PDF + test tải lại | Chưa làm |
+| OBJ-01 | Egew | INT-00 | bucket/avatar/PDF + test tải lại | Đạt chức năng local; xem object-storage-server/LOCAL_ACCEPTANCE.md; bổ sung ảnh minh chứng và nghiệm thu EC2 |
 | DNS-01 | Demonwan | IP đã chốt | dig 4 bản ghi khớp IP thực | Có bản ghi web |
 | MON-01 | Demonwan | web nền | node UP, web exporter UP, nginx_up=1, request counter tăng | Có scrape node |
 | GRAF-01 | Demonwan | node metrics | System Health of MSSV: CPU/RAM/Network + JSON export | Có datasource; dashboard mở rộng chưa nghiệm thu |

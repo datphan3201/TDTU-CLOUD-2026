@@ -32,3 +32,18 @@ docker compose up -d --force-recreate object-storage-server
 Avatar trả 200 khi không đăng nhập, tải về đúng file; PDF tồn tại và tải được theo quyền đã chọn; bucket/object còn sau recreate. Nếu trả 403, kiểm tra policy; không dùng public URL của Console làm object URL.
 
 **Minh chứng:** bucket demo, profile-pics, documents, URL avatar và thao tác download vào `docs/evidence/05-storage/`. **Bàn giao cho:** frontend nếu cần hiển thị avatar; người phụ trách EC2 cần kế hoạch truy cập API S3 9000 riêng vì gateway nền chưa route MinIO.
+
+## OBJ-01-v1 — tái tạo bucket và quyền truy cập
+
+Bucket, policy và object nằm trong volume `object-data`, không nằm trong Git. Clone repo và build image chưa tự tạo chúng. Thực hiện lại các bước sau trên một môi trường mới:
+
+1. Chạy `docker compose up -d --build object-storage-server`; mở Console `http://localhost:9001`, đăng nhập bằng thông tin riêng của môi trường trong `.env`.
+2. Tạo bucket `demo`, upload `web-frontend-server/html/index.html` ngay gốc bucket với tên `index.html`. Download rồi đối chiếu với file nguồn.
+3. Tạo bucket `profile-pics`, upload ảnh JPEG tên `avatar.jpg`. Cấu hình anonymous policy theo `policies/profile-pics-public-read.json`: chỉ cho phép đọc object, không cho phép upload/xóa ẩn danh. Có thể dùng trình sửa policy của Console khi giao diện hỗ trợ. Kiểm tra URL `http://localhost:9000/profile-pics/avatar.jpg` trong cửa sổ ẩn danh.
+4. Tạo bucket `documents`, giữ private và upload PDF báo cáo. Tải lại qua Console khi đã đăng nhập; truy cập URL object không đăng nhập phải bị từ chối. Tên PDF có thể thay đổi; dùng đúng tên object đã upload khi kiểm thử.
+5. Chạy `docker compose up -d --force-recreate object-storage-server`, đợi dịch vụ sẵn sàng và kiểm tra lại cả ba bucket/file cùng quyền truy cập. Không xóa volume để kiểm tra persistence.
+6. Lưu ảnh/log vào `docs/evidence/05-storage/` và ghi rõ môi trường/ngày. Thư mục này mặc định bị Git bỏ qua; bàn giao minh chứng theo quy ước nhóm. Không đưa mật khẩu, token hoặc URL ký còn hiệu lực vào minh chứng công khai.
+
+Policy JSON là cấu hình tham chiếu để áp dụng khi tạo bucket, không tự được import vào MinIO. Avatar và PDF cần chuẩn bị riêng, không đóng gói trong image. Khi nhóm có PDF cuối cùng, thay file trong `documents` và kiểm tra tải lại.
+
+Kết quả kiểm tra local cho phiên bản này được ghi tại [LOCAL_ACCEPTANCE.md](LOCAL_ACCEPTANCE.md). EC2 cần dựng lại dữ liệu và nghiệm thu riêng.
