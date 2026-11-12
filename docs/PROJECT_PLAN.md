@@ -18,17 +18,17 @@ Phân công đã thống nhất ngày 09/11/2026. Nhóm xác nhận đã hoàn t
 |---|---|---|---|---|
 | INT-00: cấu hình nền, .env, network | Cả nhóm | — | Compose validate, IP/cổng thống nhất | Hoàn thành local theo xác nhận của nhóm |
 | WEB-01 | Egew | INT-00 | 3 bài blog + ảnh + navigation | Chưa làm |
-| APP-01 | Newton | INT-00 | /student trả đúng 5 sinh viên | Chưa làm |
-| DB-01 | Newton | INT-00 | migration studentdb, 3 bản ghi, quyền SELECT | Có mẫu migration |
-| APP-02 (tích hợp tùy chọn) | Newton | DB-01 | /students-db đọc DB thật | Chưa làm; thực hiện sau DB-01 |
-| AUTH-01 | Newton | API + gateway nền | realm, 2 user, client, /secure xác minh JWT | Chưa làm |
+| APP-01 | Newton | INT-00 | /student trả đúng 5 sinh viên | Đạt local 12/11/2026; xem application-backend-server/LOCAL_ACCEPTANCE.md |
+| DB-01 | Newton | INT-00 | migration studentdb, 3 bản ghi, quyền SELECT | Đạt local 12/11/2026; migration lặp lại được, dữ liệu còn sau recreate |
+| APP-02 (tích hợp tùy chọn) | Newton | DB-01 | /students-db đọc DB thật | Đạt local 12/11/2026; UPDATE phản ánh ngay, DB lỗi 503 và tự phục hồi |
+| AUTH-01 | Newton | API + gateway nền | realm, 2 user, client, /secure xác minh JWT | Đạt chức năng local 12/11/2026; token thật 200/401, ca claims sai trong test RSA; bổ sung ảnh UI cho báo cáo |
 | OBJ-01 | Egew | INT-00 | bucket/avatar/PDF + test tải lại | Đạt chức năng local; xem object-storage-server/LOCAL_ACCEPTANCE.md; bổ sung ảnh minh chứng và nghiệm thu EC2 |
 | DNS-01 | Demonwan | IP đã chốt | dig 4 bản ghi khớp IP thực | Có bản ghi web |
 | MON-01 | Demonwan | web nền | node UP, web exporter UP, nginx_up=1, request counter tăng | Có scrape node |
 | GRAF-01 | Demonwan | node metrics | System Health of MSSV: CPU/RAM/Network + JSON export | Có datasource; dashboard mở rộng chưa nghiệm thu |
-| GW-01 | Newton | APP-01 | /student/ trả cùng dữ liệu /api/student | Chưa làm |
-| LB-01 | Egew | web + gateway, phối hợp Newton | 2 web có nhãn khác nhau, Round Robin, request tới cả hai | Đạt local với override LB; xem api-gateway-proxy-server/LB_LOCAL_ACCEPTANCE.md; chờ ghép GW-01/monitoring và nghiệm thu EC2 |
-| DEPLOY-01 | Newton điều phối; cả nhóm kiểm thử | nghiệm thu local | Docker Hub + EC2 + log kiểm thử từng phần | Chưa làm |
+| GW-01 | Newton | APP-01 | /student/ trả cùng dữ liệu /api/student | Đạt local 12/11/2026; đã ghép và kiểm thử gateway nền + LB |
+| LB-01 | Egew | web + gateway, phối hợp Newton | 2 web có nhãn khác nhau, Round Robin, request tới cả hai | Đạt local với override LB; xem api-gateway-proxy-server/LB_LOCAL_ACCEPTANCE.md; đã ghép GW-01 ngày 12/11; chờ ghép monitoring và nghiệm thu EC2 |
+| DEPLOY-01 | Newton điều phối; cả nhóm kiểm thử | nghiệm thu local | Docker Hub + EC2 + log kiểm thử từng phần | Để giai đoạn sau theo yêu cầu nhóm ngày 12/11/2026; chưa push image/triển khai cloud |
 | REPORT-01 | Cả nhóm | minh chứng từng task | mỗi người viết phần phụ trách, cùng ghép báo cáo 5 chương và video | Có dàn ý |
 
 ### Phối hợp và bàn giao

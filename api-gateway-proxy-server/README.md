@@ -8,10 +8,12 @@ Gateway nghe cổng 80, route `/` → web, `/api/` → API (bỏ prefix), `/auth
 
 ## GW-01 — route sinh viên
 
-- [ ] Thêm trong `server` một exact location `/student/`.
-- [ ] Trỏ tới backend `/student`, không gửi `/student/` vì Flask route hiện là `/student`.
-- [ ] Giữ các forwarded headers ở cấp server; kiểm tra query string được chuyển tiếp khi cần.
-- [ ] Validate rồi reload; so sánh dữ liệu `/student/` và `/api/student`.
+Đã triển khai ngày 12/11/2026 trong cả `nginx.conf` và `nginx.lb.conf`; đã kiểm thử gateway nền và LB. Xem [biên bản Newton](../application-backend-server/LOCAL_ACCEPTANCE.md).
+
+- [x] Thêm trong `server` một exact location `/student/`.
+- [x] Trỏ tới backend `/student`, không gửi `/student/` vì Flask route hiện là `/student`.
+- [x] Giữ các forwarded headers ở cấp server; kiểm tra query string được chuyển tiếp khi cần.
+- [x] Validate rồi reload; so sánh dữ liệu `/student/` và `/api/student`.
 
 Mẫu định tuyến:
 

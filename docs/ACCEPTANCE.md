@@ -1,6 +1,6 @@
 # Ma trận nghiệm thu
 
-Đánh dấu sau khi kiểm thử thật, ghi ngày/môi trường và đường dẫn minh chứng. Các ô đang để trống vì scaffold chưa chứng minh toàn bộ chức năng runtime. HTTP 501 là task chưa triển khai.
+Đánh dấu sau khi kiểm thử thật, ghi ngày/môi trường và đường dẫn minh chứng. Chỉ các mục có kết quả thực tế mới được đánh dấu. Các task Newton đánh dấu bên dưới đạt chức năng local ngày 12/11/2026; xem [biên bản](../application-backend-server/LOCAL_ACCEPTANCE.md). Chưa nghiệm thu EC2; ảnh UI và video báo cáo cần bổ sung.
 
 ## Phần cơ bản — 5 điểm
 
@@ -27,14 +27,14 @@
 | Đạt | Task | Kiểm thử bắt buộc | Minh chứng |
 |---|---|---|---|
 | [ ] | WEB-01 | 3 bài + ảnh + link về Home; trực tiếp/qua proxy | Ảnh blog và HTTP 200 |
-| [ ] | APP-01 | `/api/student` trả 5 object đúng trường/kiểu | JSON response |
-| [ ] | DB-01 | schema studentdb.students + ít nhất 3 dòng | DESCRIBE/SELECT; APP-02 nếu làm |
-| [ ] | AUTH-01 | realm MSSV, 2 users, public client, token → secure | UI config, 200 và 401 |
+| [x] | APP-01 | `/api/student` trả 5 object đúng trường/kiểu | LOCAL_ACCEPTANCE.md, local-newton-check.txt |
+| [x] | DB-01 | schema studentdb.students + ít nhất 3 dòng | Migration + SQL đối chiếu + APP-02; LOCAL_ACCEPTANCE.md |
+| [x] | AUTH-01 | realm MSSV, 2 users, public client, token → secure | Admin API + token thật 200/401; claims sai dùng RSA fixture; bổ sung ảnh UI |
 | [ ] | OBJ-01 | avatar public, PDF bucket documents tải được | Bucket, URL, download |
 | [ ] | DNS-01 | app-backend, minio, keycloak phân giải đúng | dig và zone file |
 | [ ] | MON-01 | web exporter UP, nginx_up=1, request counter tăng | Targets + PromQL |
 | [ ] | GRAF-01 | System Health of MSSV, CPU/RAM/Network | Ảnh 3 panel + JSON export |
-| [ ] | GW-01 | `/student/` bằng `/api/student` | Config và JSON đối chiếu |
+| [x] | GW-01 | `/student/` bằng `/api/student` | Cấu hình nền/LB + JSON đối chiếu; LOCAL_ACCEPTANCE.md |
 | [ ] | LB-01 | Hai web, Round Robin, trang có nhãn khác nhau | Chuỗi request/header + 2 trang |
 
 Đề có chỗ gọi “9 yêu cầu mở rộng”, nhưng bảng điểm thực tế có 10 mục gồm load balancing. Dùng đủ 10 mục để theo dõi. APP-02 `/students-db` được chuẩn bị thành task tích hợp riêng; đề mô tả kết nối Flask là tùy chọn trong phần DB nhưng có nêu URL, nên hoàn thành nếu hướng tới bài tích hợp đầy đủ.

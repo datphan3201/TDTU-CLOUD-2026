@@ -56,7 +56,7 @@ docker compose ps
 
 Nếu muốn dùng đúng image web đã push mà không rebuild nó, pull web rồi chạy `up -d --no-build web-frontend-server`; build API và storage bằng `docker compose build application-backend-server object-storage-server`, sau đó `up -d --no-build` toàn cụm khi mọi image đã có. MinIO được build từ mã nguồn chính thức vì image công khai cũ không còn tải được; lần build đầu cần thêm thời gian và tài nguyên. Ghi rõ cách thực tế đã dùng.
 
-Nếu đã làm override monitoring/LB, truyền cùng các cờ `-f` như local. Chạy migration DB-01, tái dựng realm/client/users và bucket demo. File realm import không tự ghi đè realm tồn tại; export UI có thể không chứa password user nên phải đặt lại. Khi chỉ làm bằng UI, ghi lại các bước đủ chi tiết để tái dựng.
+Nếu đã làm override monitoring/LB, truyền cùng các cờ `-f` như local. Chạy `python3 scripts/migrate-students.py` và `python3 scripts/setup-keycloak.py` để tái tạo DB-01 và realm/client/users; cấu hình bucket demo theo README storage. File realm import không tự ghi đè realm tồn tại; export UI có thể không chứa password user nên phải đặt lại. Khi chỉ làm bằng UI, ghi lại các bước đủ chi tiết để tái dựng.
 
 ## 5. Truy cập giao diện quản trị qua SSH tunnel
 

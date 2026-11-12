@@ -4,7 +4,7 @@
 
 ## Trạng thái khung
 
-Đã có cấu hình khởi đầu cho 9 vai trò server, tương ứng **10 container** khi tính thêm Node Exporter. Web có Home/Blog mẫu; API có `/hello` và `/health`; MariaDB có bảng `notes`; DNS có bản ghi web; Grafana có datasource Prometheus. Các bài blog cá nhân, API sinh viên, xác thực JWT, bucket, dashboard và load balancing còn là việc cần thực hiện. Endpoint chưa triển khai trả **501**, không được tính là đạt.
+Đã có cấu hình khởi đầu cho 9 vai trò server, tương ứng **10 container** khi tính thêm Node Exporter. Web có Home/Blog mẫu; API có `/hello` và `/health`; MariaDB có bảng `notes`; DNS có bản ghi web; Grafana có datasource Prometheus. API sinh viên, database sinh viên, xác thực JWT và route `/student/` đã triển khai và nghiệm thu local ngày 12/11/2026; xem [biên bản Newton](application-backend-server/LOCAL_ACCEPTANCE.md). Trạng thái blog/storage/dashboard/LB theo kế hoạch từng người; chưa nghiệm thu cloud.
 
 Đây là môi trường học tập theo DOCX, có Keycloak `start-dev` và các image ghim phiên bản cho lab. [Hướng dẫn EC2](docs/DEPLOYMENT.md) mô tả cách đưa lên máy Ubuntu và kiểm thử lại.
 

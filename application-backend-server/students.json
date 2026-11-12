@@ -1,1 +1,7 @@
-[]
+[
+  {"id": 1, "name": "Nguyễn Minh An", "major": "Công nghệ thông tin", "gpa": 3.6},
+  {"id": 2, "name": "Trần Bảo Bình", "major": "Khoa học máy tính", "gpa": 3.4},
+  {"id": 3, "name": "Lê Khánh Chi", "major": "Kỹ thuật phần mềm", "gpa": 3.8},
+  {"id": 4, "name": "Phạm Quốc Dũng", "major": "Mạng máy tính", "gpa": 3.2},
+  {"id": 5, "name": "Võ Hoàng Giang", "major": "An toàn thông tin", "gpa": 3.7}
+]

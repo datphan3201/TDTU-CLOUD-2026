@@ -5,6 +5,7 @@
 __pycache__/
 *.py[cod]
 .pytest_cache/
+authentication-identity-server/import/realm-*.json
 .DS_Store
 object-storage-server/uploads/*
 !object-storage-server/uploads/.gitkeep

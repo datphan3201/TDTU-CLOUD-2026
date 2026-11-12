@@ -2,7 +2,7 @@
 
 ## Sơ đồ
 
-Bộ [5 sơ đồ Archify tương tác](diagrams/index.html) gồm tổng thể local, triển khai Docker, JWT mục tiêu, giám sát và load balancing mục tiêu. Xem [ghi chú nguồn và cách tái tạo](diagrams/README.md) để phân biệt cấu hình hiện tại với phần mở rộng dự kiến.
+Bộ [5 sơ đồ Archify tương tác](diagrams/index.html) gồm tổng thể local, triển khai Docker, JWT mục tiêu, giám sát và load balancing mục tiêu. Các artifact Archify ghim snapshot trước khi triển khai task Newton; sơ đồ Mermaid và hợp đồng bên dưới đã cập nhật ngày 12/11/2026. Xem [ghi chú nguồn và cách tái tạo](diagrams/README.md).
 
 ```mermaid
 flowchart LR
@@ -11,8 +11,8 @@ flowchart LR
         gateway -->|/ và /blog/| web[Nginx Web :80]
         gateway -->|/api/ bỏ prefix| app[Flask :8081]
         gateway -->|/auth/ giữ prefix| auth[Keycloak :8080/auth]
-        app -. APP-02 .-> db[(MariaDB :3306)]
-        app -. AUTH-01: JWKS .-> auth
+        app -->|SELECT studentdb.students| db[(MariaDB :3306)]
+        app -->|JWKS nội bộ, cache 300s| auth
         dns[Bind9 :53]
         storage[(MinIO :9000 / Console :9001)]
         prom[Prometheus :9090] --> node[Node Exporter :9100]
@@ -21,7 +21,7 @@ flowchart LR
     browser -->|cổng riêng qua localhost / SSH tunnel| storage
 ```
 
-Nét đứt là tích hợp còn TODO. DNS Bind9 phục vụ zone riêng; Docker embedded DNS `127.0.0.11` tiếp tục phân giải tên service. Scaffold chưa cấu hình mọi container tự dùng Bind9: muốn gọi `*.cloud.local`, truyền resolver rõ ràng hoặc thiết kế forwarder trước khi đổi `dns:`. Zone `.local` được giữ theo đề, có thể xung đột mDNS trên host; dùng `dig @...` để kiểm chứng.
+APP-01, APP-02, AUTH-01 và GW-01 đã nghiệm thu chức năng local ngày 12/11/2026; xem [kết quả](../application-backend-server/LOCAL_ACCEPTANCE.md). DNS Bind9 phục vụ zone riêng; Docker embedded DNS `127.0.0.11` tiếp tục phân giải tên service. Scaffold chưa cấu hình mọi container tự dùng Bind9: muốn gọi `*.cloud.local`, truyền resolver rõ ràng hoặc thiết kế forwarder trước khi đổi `dns:`. Zone `.local` được giữ theo đề, có thể xung đột mDNS trên host; dùng `dig @...` để kiểm chứng.
 
 ## Danh mục IP
 
@@ -51,19 +51,19 @@ MinIO được build từ mã nguồn upstream tag `RELEASE.2025-04-22T22-12-26Z
 | `/` | web `/` | HTML 200 |
 | `/blog/` | web `/blog/` | HTML 200 |
 | `/api/hello` | app `/hello` | 200, `{"message":"Hello from App Server!"}` |
-| `/api/student` | app `/student` | 200, mảng JSON 5 sinh viên; TODO APP-01 |
-| `/api/students-db` | app `/students-db` | 200, dữ liệu studentdb; TODO APP-02 |
-| `/api/secure` | app `/secure` | token hợp lệ 200; thiếu/sai/hết hạn 401; TODO AUTH-01 |
+| `/api/student` | app `/student` | 200, mảng JSON 5 sinh viên; GPA thang 0–4 |
+| `/api/students-db` | app `/students-db` | 200, dữ liệu studentdb; ngày sinh ISO |
+| `/api/secure` | app `/secure` | token hợp lệ 200; thiếu/sai/hết hạn 401; lỗi JWKS 503 |
 | `/auth/…` | Keycloak `/auth/…` | discovery/login đúng URL canonical |
-| `/student/` | app `/student` | cùng dữ liệu /api/student; TODO GW-01 |
+| `/student/` | app `/student` | cùng dữ liệu /api/student; có ở cả gateway nền và LB |
 
-`/health` trên API là liveness: 200 chỉ xác nhận process API đang phục vụ, chưa chứng minh kết nối DB hoặc OIDC. Các endpoint TODO ban đầu trả 501.
+`/health` trên API là liveness: 200 chỉ xác nhận process API đang phục vụ, chưa chứng minh kết nối DB hoặc OIDC. Các endpoint sinh viên và xác thực đã triển khai, không còn trả 501.
 
 Cổng MariaDB trên host có thể đổi bằng `DB_HOST_PORT` (mặc định `3306`); cổng container và kết nối API luôn là `3306`.
 
 ## Hợp đồng dữ liệu
 
-`students.json`: mảng **5** object, trường `id` là số nguyên, `name` và `major` là chuỗi, `gpa` là số. Chọn một thang GPA thống nhất và ghi rõ trong bài. Chưa điền dữ liệu ở scaffold.
+`students.json`: mảng **5** object, trường `id` là số nguyên, `name` và `major` là chuỗi, `gpa` là số. Dữ liệu demo hư cấu đã điền, GPA dùng thang 0–4.
 
 `studentdb.students`: `id INT PRIMARY KEY AUTO_INCREMENT`, `student_id VARCHAR(10)`, `fullname VARCHAR(100)`, `dob DATE`, `major VARCHAR(50)`; ít nhất **3** dòng. API `/students-db` trả tên cột này; chuyển `dob` thành chuỗi ISO `YYYY-MM-DD` trước khi JSON hóa. Schema này khác danh sách JSON; không tự đổi tên cột nếu chưa cập nhật hợp đồng.
 
@@ -99,6 +99,12 @@ Grafana hiển thị metrics từ Prometheus, đáp ứng lựa chọn visualiza
 
 ## LB-01-v1 — override cân bằng tải
 
-Dùng `api-gateway-proxy-server/compose.lb.yml` cùng Compose nền để bật web2 và mount `nginx.lb.conf` vào Gateway. Instance đầu giữ service/container name web-frontend-server, thêm hostname/alias web-frontend-server1. Gateway `/` dùng upstream web_pool với hai web, Round Robin mặc định. Các route API/auth nền được giữ; `/student/` chưa triển khai và cần ghép khi Newton bàn giao GW-01.
+Dùng `api-gateway-proxy-server/compose.lb.yml` cùng Compose nền để bật web2 và mount `nginx.lb.conf` vào Gateway. Instance đầu giữ service/container name web-frontend-server, thêm hostname/alias web-frontend-server1. Gateway `/` dùng upstream web_pool với hai web, Round Robin mặc định. Các route API/auth nền được giữ; `/student/` đã ghép vào cả cấu hình nền và LB, trả cùng JSON `/api/student` khi nghiệm thu ngày 12/11/2026.
 
 Hai instance dùng cùng image web; trang chủ mount từ lb-pages/index1.html và index2.html có nhãn khác nhau. Web1 truy cập trực tiếp cổng 8080, web2 cổng 8086 theo LOCAL_BIND_ADDRESS. Hai cổng này dùng xem từng instance, Gateway mới là đường kiểm tra cân bằng tải. Cổng stub_status nội bộ 8082 giữ nguyên. File override monitoring phải truyền riêng khi nhóm tích hợp; nghiệm thu LB local chưa xác nhận cấu hình ghép monitoring/EC2.
+
+## Tái tạo task Newton trên local
+
+Sau khi dịch vụ nền sẵn sàng: `python3 scripts/migrate-students.py`, `python3 scripts/setup-keycloak.py`, rebuild API rồi validate/reload gateway. Migration chạy lặp không nhân đôi hoặc ghi đè các bản ghi mẫu, script cấp SELECT cho DB_USER thực tế. Realm template không chứa credentials; password demo sinh trong `.env`, export cấu hình được sinh trong thư mục import bị gitignore.
+
+`python3 scripts/check-newton.py` kiểm tra read-only với token thật và SQL đối chiếu. `scripts/check-newton-resilience.py` là kiểm thử có gián đoạn local: sửa/khôi phục dòng demo, stop/start DB và recreate DB/auth giữ volume. Unit test dùng HTTP JWKS fixture và RSA thật để xác nhận các ca chữ ký/claims, cache và key rotation. Cloud deployment để sau theo yêu cầu nhóm.

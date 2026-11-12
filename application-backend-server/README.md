@@ -1,59 +1,67 @@
 # 02 — Application Backend Server
 
-**Tasks:** APP-01, APP-02; phối hợp AUTH-01. **Phụ thuộc:** APP-01 độc lập; APP-02 đợi DB-01; `/secure` đợi Keycloak realm/client/JWKS.
+**Phụ trách:** Newton. **Tasks:** APP-01, APP-02 (tùy chọn), phối hợp AUTH-01 và GW-01.
 
-## Vai trò và phần đã có
+## Chức năng đã triển khai
 
-Flask chạy bằng Gunicorn ở cổng nội bộ 8081, publish host 8085. `/hello`, `/health` đã có; `/student`, `/students-db`, `/secure` hiện trả **501**. `students.json` là mảng rỗng để người phụ trách điền dữ liệu thật.
+Flask/Gunicorn nghe cổng container 8081, host 8085. `/health` là liveness; `/hello` giữ response nền.
 
-## APP-01 — danh sách JSON
+| Endpoint trực tiếp | Endpoint gateway | Hành vi |
+|---|---|---|
+| `/student` | `/api/student`, `/student/` | Đọc UTF-8 từ `Path(__file__).with_name("students.json")`; trả 5 object `id/name/major/gpa` |
+| `/students-db` | `/api/students-db` | SELECT DB thật; trả `id/student_id/fullname/dob/major`; ngày ISO |
+| `/secure` | `/api/secure` | Bearer JWT RS256; kiểm tra `iss`, `aud`, `exp`, `sub`; 200 và username khi hợp lệ |
 
-- [ ] Điền đúng 5 sinh viên, mỗi object gồm `id`, `name`, `major`, `gpa` theo hợp đồng trong `docs/ARCHITECTURE.md`.
-- [ ] Dùng `pathlib.Path(__file__).with_name("students.json")` để đường dẫn không phụ thuộc thư mục chạy.
-- [ ] Đọc UTF-8, trả mảng bằng `jsonify`; file lỗi/mất trả lỗi 500 rõ ràng và log server.
-- [ ] Gọi qua proxy `/api/student`; bàn giao cho GW-01.
+Dữ liệu sinh viên là mẫu hư cấu; GPA dùng thang 0–4. Schema JSON và schema DB khác nhau theo hợp đồng đề bài.
 
-## APP-02 — đọc database
+File sinh viên thiếu/sai định dạng trả 500 với mã lỗi chung. DB không sẵn sàng trả 503, không đưa chi tiết driver/credentials ra response. Kết nối có timeout 3 giây, cursor/connection đóng sau request, user ứng dụng chỉ SELECT bảng sinh viên.
 
-- [ ] Thêm driver MySQL/MariaDB vào `requirements.txt` và ghim phiên bản sau khi xác minh.
-- [ ] Đọc `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `STUDENT_DB_NAME` từ environment.
-- [ ] Kết nối bằng user ứng dụng, timeout hữu hạn; truy vấn `students`, đóng connection/cursor sau mỗi request hoặc dùng pool phù hợp.
-- [ ] JSON trả các cột `id`, `student_id`, `fullname`, `dob`, `major`; chuyển `dob` sang ISO.
-- [ ] DB chưa sẵn sàng trả 503; không trả mật khẩu hoặc nguyên văn lỗi driver cho client.
-- [ ] Sửa 1 bản ghi trong DB rồi gọi lại API để chứng minh dữ liệu được đọc thật.
+JWT thiếu/sai định dạng, sai chữ ký/issuer/audience/hết hạn trả 401 với `WWW-Authenticate: Bearer`. Backend lấy JWKS qua tên service nội bộ nhưng so `iss` với public URL qua gateway. JWKS set cache 300 giây, HTTP timeout 3 giây, refresh khi gặp `kid` mới; không cache signing key vô thời hạn. Lỗi kết nối JWKS trả 503.
 
-## AUTH-01 — tài nguyên bảo vệ
+## Dựng lại và kiểm thử local
 
-Triển khai `/secure` theo [phiếu auth](../authentication-identity-server/README.md). HTTP client lấy JWKS qua URL nội bộ; giá trị `iss` vẫn so với issuer public. Thư viện JWT phải kiểm tra RS256, `iss`, `aud`, `exp`. Không chỉ decode payload. Cache khóa có timeout và refresh khi gặp `kid` mới.
-
-## Chạy và kiểm thử
+Từ gốc repository, sau khi DB/Keycloak nền đã chạy:
 
 ```bash
+python3 scripts/migrate-students.py
+python3 scripts/setup-keycloak.py
 docker compose up -d --build application-backend-server
-curl -fsS http://localhost:8085/hello
-curl -fsS http://localhost/api/hello
-curl -fsS http://localhost/api/student
-curl -fsS http://localhost/api/students-db
-docker compose logs --tail=100 application-backend-server
+docker compose exec api-gateway-proxy-server nginx -t
+docker compose exec api-gateway-proxy-server nginx -s reload
+python3 scripts/check-newton.py
 ```
 
-Hai lệnh `/student` và `/students-db` chỉ đạt sau khi hoàn thành task; ở scaffold, `curl -f` sẽ thất bại với 501.
+Nếu dùng LB, khởi động gateway bằng cùng bộ override theo README gateway. Cả `nginx.conf` và `nginx.lb.conf` đã có route `/student/`.
 
-Nếu phát triển Python ngoài Docker, tuân thủ môi trường riêng ở repository:
+Kiểm tra thủ công:
 
 ```bash
-uv python install 3.12
-uv venv --python 3.12 .venv
-source .venv/bin/activate
-which python
-python --version
-uv pip install -r application-backend-server/requirements.txt
-# Chạy ở host phải đặt DB_HOST=127.0.0.1 và các biến liên quan nếu dùng DB.
-python -m flask --app application-backend-server/app.py run --port 8085
+curl -fsS http://localhost:8085/student
+curl -fsS http://localhost/api/student
+curl -fsS http://localhost/student/
+curl -fsS http://localhost/api/students-db
+curl -i http://localhost/api/secure
 ```
 
-## Tiêu chí bàn giao
+Lệnh cuối phải trả 401 khi chưa gửi token. `check-newton.py` lấy token thật cho sv01/sv02 bằng mật khẩu trong `.env`, kiểm tra API và không in mật khẩu/token.
 
-APP-01 trả 5 object đúng kiểu; APP-02 trả ít nhất 3 dòng từ DB thật; trực tiếp và qua proxy trả cùng dữ liệu. `/health` 200 không thay thế các kiểm thử này.
+## Kiểm thử tự động
 
-**Minh chứng:** response JSON, truy vấn đối chiếu SQL, kiểm thử DB mất kết nối và auth; lưu ở `docs/evidence/02-app/`. **Bàn giao cho:** gateway, auth và người làm báo cáo.
+Dùng môi trường Python riêng của repository:
+
+```bash
+uv pip install --python .venv/bin/python -r application-backend-server/requirements.txt
+.venv/bin/python -m unittest discover -s application-backend-server -p 'test_*.py' -v
+```
+
+8 test groups dùng chữ ký RSA thật và HTTP JWKS fixture: token hợp lệ, ca chữ ký/claims sai, header thiếu/sai, cache TTL, rotation `kid`, lỗi JWKS, lỗi DB và đường dẫn JSON độc lập thư mục chạy.
+
+Kiểm thử gián đoạn/persistence là lệnh riêng, **chỉ chạy khi chấp nhận gián đoạn cụm local ngắn**:
+
+```bash
+python3 -u scripts/check-newton-resilience.py
+```
+
+Script tạm UPDATE bản ghi DEMO001 rồi khôi phục, stop/start DB, recreate DB/Keycloak nhưng giữ named volumes; xác nhận API phục hồi và cả hai user vẫn đăng nhập được. Không chạy lệnh này trên cụm đang demo cho người khác hoặc môi trường cloud chưa thống nhất.
+
+Kết quả và phạm vi: [LOCAL_ACCEPTANCE.md](LOCAL_ACCEPTANCE.md). Các script setup dùng Python stdlib và Docker Compose; chỉ unit tests cần dependencies trong `.venv`.

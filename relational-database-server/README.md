@@ -1,45 +1,36 @@
 # 03 — Relational Database Server
 
-**Task:** DB-01. **Phụ thuộc:** `.env`; cần bàn giao schema/quyền cho APP-02.
+**Phụ trách:** Newton. **Task:** DB-01, bàn giao cho APP-02.
 
-## Vai trò và phần đã có
+MariaDB 11.4 dùng named volume `database-data`. Init tạo `minicloud.notes`; migration mở rộng tạo `studentdb.students` với ít nhất 3 sinh viên mẫu hư cấu. Schema gồm `id INT PRIMARY KEY AUTO_INCREMENT`, `student_id VARCHAR(10)`, `fullname VARCHAR(100)`, `dob DATE`, `major VARCHAR(50)`.
 
-MariaDB 11.4, named volume `database-data`, user ứng dụng từ `.env`. Init SQL tạo `minicloud.notes` với một dòng mẫu. Thư mục `migrations/` chứa mẫu việc mở rộng, chưa tạo bảng sinh viên.
-
-Nếu cổng host `3306` đã được dùng bởi MySQL/MariaDB khác, đặt `DB_HOST_PORT=3307` trong `.env`. Chỉ cổng truy cập từ host thay đổi; API vẫn dùng `relational-database-server:3306` trong Docker network. Các lệnh `docker compose exec` dưới đây không bị ảnh hưởng.
-
-## Việc cần làm
-
-- [ ] Sao chép `migrations/002_students.sql.example` thành `migrations/002_students.sql`.
-- [ ] Tạo `studentdb.students`: `id INT PRIMARY KEY AUTO_INCREMENT`, `student_id VARCHAR(10)`, `fullname VARCHAR(100)`, `dob DATE`, `major VARCHAR(50)`.
-- [ ] Thêm ít nhất 3 sinh viên thật/mẫu, thống nhất dữ liệu với báo cáo.
-- [ ] Cấp `SELECT` trên `studentdb.students` cho user `DB_USER` trong `.env`, host `%`. SQL migration cần tên user thực; file `.sql` không tự thay `${DB_USER}`.
-- [ ] Chạy migration và kiểm tra bằng chính user ứng dụng.
-- [ ] Thử UPDATE/DELETE trên dữ liệu thử và ghi kết quả nếu làm phần CRUD tùy chọn.
-
-## Chạy và kiểm thử
+## Dựng và chạy migration
 
 ```bash
 docker compose up -d relational-database-server
+# Đợi healthy:
 docker compose ps relational-database-server
-docker compose exec relational-database-server sh -lc 'mariadb -uroot -p"$MARIADB_ROOT_PASSWORD" -e "SHOW DATABASES; SELECT * FROM minicloud.notes;"'
-
-# Sau khi hoàn thành migration:
-docker compose exec -T relational-database-server sh -lc 'mariadb -uroot -p"$MARIADB_ROOT_PASSWORD"' < relational-database-server/migrations/002_students.sql
-docker compose exec relational-database-server sh -lc 'mariadb -u"$MARIADB_USER" -p"$MARIADB_PASSWORD" -e "SELECT * FROM studentdb.students;"'
+python3 scripts/migrate-students.py
 ```
 
-Kiểm tra lưu dữ liệu khi recreate:
+Script dùng `migrations/002_students.sql`, áp dụng được cả khi volume đã có dữ liệu. Các dòng DEMO001/002/003 chỉ chèn nếu chưa có, không ghi đè nội dung hiện tại. Chạy tuần tự, không chạy migration đồng thời từ nhiều terminal.
+
+Script cấp SELECT đúng bảng `studentdb.students` cho `MARIADB_USER` thực tế lấy từ Compose; DB_USER là user ứng dụng, dùng chữ/số/underscore, không dùng root. File `.sql` không tự nội suy `${DB_USER}`; nếu chỉ chạy SQL thủ công phải cấp quyền riêng. File `.example` giữ làm tài liệu scaffold cũ, không cần sao chép đè migration đã hoàn thiện.
 
 ```bash
-docker compose up -d --force-recreate relational-database-server
-# Đợi healthy rồi chạy lại SELECT ở trên.
+docker compose exec relational-database-server sh -lc 'mariadb -uroot -p"$MARIADB_ROOT_PASSWORD" -e "DESCRIBE studentdb.students; SELECT * FROM studentdb.students;"'
+docker compose exec relational-database-server sh -lc 'mariadb -u"$MARIADB_USER" -p"$MARIADB_PASSWORD" -e "SELECT * FROM studentdb.students;"'
+python3 scripts/check-newton.py
 ```
 
-## Tiêu chí bàn giao
+APP-02 dùng hostname `relational-database-server`, cổng container 3306, DB `studentdb`, user ứng dụng từ environment. API chuyển `dob` thành ISO `YYYY-MM-DD`. `check-newton.py` đối chiếu response API với SQL từ chính user ứng dụng.
 
-Schema đúng tên/cột, ít nhất 3 dòng, user ứng dụng SELECT được, dữ liệu còn sau recreate. Bàn giao cho API: host `relational-database-server`, port `3306`, database `studentdb`, tên trường và cách serialize `dob`. Không đưa root password vào code.
+## Cổng host và dữ liệu bền
 
-**Minh chứng:** SHOW TABLES, DESCRIBE, SELECT và kiểm tra sau recreate vào `docs/evidence/03-database/`.
+Nếu host 3306 đã có MySQL/MariaDB khác, đặt `DB_HOST_PORT=3307` trong `.env`. Chỉ cổng host thay đổi; API vẫn kết nối container 3306. Môi trường local nghiệm thu hiện dùng 3307.
 
-**Lỗi thường gặp:** init chỉ chạy khi volume rỗng; thêm file vào `init/` rồi restart không áp dụng cho DB cũ. Dùng migration để cập nhật; không xóa volume để “sửa” lỗi này. Thay mật khẩu trong `.env` không tự đổi mật khẩu tài khoản đã tồn tại trong volume. `DB_NAME` trong `.env` và `USE` ở SQL phải khớp.
+`python3 -u scripts/check-newton-resilience.py` kiểm chứng UPDATE thật, lỗi DB 503, tự phục hồi và dữ liệu còn sau recreate DB/Keycloak. Lệnh có gián đoạn local ngắn; script giữ named volumes và khôi phục dòng thử.
+
+Không xóa volume để áp dụng migration. Thay mật khẩu trong `.env` không tự đổi mật khẩu đã lưu trong DB. `DB_NAME=minicloud` dành cho notes, còn `STUDENT_DB_NAME=studentdb` dành cho API mở rộng. CRUD UPDATE/DELETE từ người dùng là phần tùy chọn; API hiện chỉ đọc bảng sinh viên.
+
+Xem [nghiệm thu local](../application-backend-server/LOCAL_ACCEPTANCE.md). Log SQL/persistence nằm ở `docs/evidence/03-database/` hoặc `docs/evidence/00-integration/` và bị gitignore theo quy ước nhóm.

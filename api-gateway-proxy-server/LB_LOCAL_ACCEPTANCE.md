@@ -19,3 +19,7 @@ Kiểm tra ngày 10/11/2026 (Asia/Saigon). Chưa nghiệm thu EC2 hoặc cấu h
 - Thư mục minh chứng bị gitignore theo quy ước nhóm; ảnh/log không nằm trong commit này.
 
 Ảnh hai URL trực tiếp chứng minh hai trang có nhãn khác nhau; chuỗi request qua Gateway chứng minh phân phối tải. Refresh trình duyệt có thể thấy cùng nhãn vì request CSS/ảnh cũng tham gia Round Robin.
+
+## Bổ sung tích hợp Newton ngày 12/11/2026
+
+GW-01 đã được ghép vào `nginx.conf` và `nginx.lb.conf`. Khi bật override LB, `/student/` (kể cả query string) và `/api/student` trả cùng 5 sinh viên; `/api/students-db` đọc DB thật; JWT qua gateway hoạt động. Kiểm tra lại Round Robin vẫn thấy cả hai instance. Xem `application-backend-server/LOCAL_ACCEPTANCE.md` cho phạm vi và lệnh tái hiện; ghi chú 404 ở lần nghiệm thu 10/11 bên trên là lịch sử, không phải hiện trạng.

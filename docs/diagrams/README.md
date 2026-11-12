@@ -1,5 +1,7 @@
 # Sơ đồ MyMiniCloud bằng Archify
 
+**Cập nhật 12/11/2026:** các sơ đồ bên dưới giữ nguyên snapshot tại commit đã ghim. APP-01/DB-01/APP-02/AUTH-01/GW-01 hiện đã triển khai và nghiệm thu chức năng local; xem [biên bản mới](../../application-backend-server/LOCAL_ACCEPTANCE.md). Nhãn TODO trong artifact cũ không phản ánh trạng thái code mới. Không sửa tay HTML vì có provenance/hash riêng.
+
 Mở `index.html` bằng trình duyệt để xem bộ 5 sơ đồ tương tác. Mỗi `diagram.html` là một artifact độc lập, không cần server hoặc Archify để xem. GitHub không chạy HTML trực tiếp trong trang xem file; tải file về hoặc mở bản local.
 
 | Sơ đồ | Phạm vi |

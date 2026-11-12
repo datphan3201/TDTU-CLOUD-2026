@@ -1,0 +1,38 @@
+{
+  "realm": "__REALM__",
+  "enabled": true,
+  "displayName": "MyMiniCloud Lab",
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "resetPasswordAllowed": false,
+  "loginWithEmailAllowed": false,
+  "clients": [
+    {
+      "clientId": "flask-app",
+      "name": "MyMiniCloud Flask API",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "protocolMappers": [
+        {
+          "name": "flask-app-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.client.audience": "flask-app",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {"username": "sv01", "enabled": true, "emailVerified": true, "email": "sv01@example.invalid", "firstName": "Sinh viên", "lastName": "01", "requiredActions": []},
+    {"username": "sv02", "enabled": true, "emailVerified": true, "email": "sv02@example.invalid", "firstName": "Sinh viên", "lastName": "02", "requiredActions": []}
+  ]
+}
