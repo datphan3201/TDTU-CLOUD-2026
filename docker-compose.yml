@@ -156,7 +156,8 @@ services:
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
-      - /:/host/root:ro,rslave
+      # Docker Desktop không hỗ trợ bind propagation rslave.
+      - /:/host/root:ro
     networks:
       cloud-net:
         ipv4_address: 10.10.10.61

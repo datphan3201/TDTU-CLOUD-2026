@@ -23,15 +23,36 @@ Phân công đã thống nhất ngày 09/11/2026. Nhóm xác nhận đã hoàn t
 | APP-02 (tích hợp tùy chọn) | Newton | DB-01 | /students-db đọc DB thật | Chưa làm; thực hiện sau DB-01 |
 | AUTH-01 | Newton | API + gateway nền | realm, 2 user, client, /secure xác minh JWT | Chưa làm |
 | OBJ-01 | Egew | INT-00 | bucket/avatar/PDF + test tải lại | Chưa làm |
-| DNS-01 | Demonwan | IP đã chốt | dig 4 bản ghi khớp IP thực | Có bản ghi web |
-| MON-01 | Demonwan | web nền | node UP, web exporter UP, nginx_up=1, request counter tăng | Có scrape node |
-| GRAF-01 | Demonwan | node metrics | System Health of MSSV: CPU/RAM/Network + JSON export | Có datasource; dashboard mở rộng chưa nghiệm thu |
+| DNS-01 | Demonwan | IP đã chốt | dig 4 bản ghi khớp IP thực | Đã kiểm thử chức năng local/EC2 theo xác nhận Demonwan; chờ bổ sung minh chứng |
+| MON-01 | Demonwan | web nền | node UP, web exporter UP, nginx_up=1, request counter tăng | Đã kiểm thử chức năng local/EC2 theo xác nhận Demonwan; chờ bổ sung minh chứng |
+| GRAF-01 | Demonwan | node metrics | System Health of MSSV: CPU/RAM/Network + JSON export | Có JSON; đã kiểm thử EC2 và recreate theo xác nhận Demonwan; chờ bổ sung minh chứng |
 | GW-01 | Newton | APP-01 | /student/ trả cùng dữ liệu /api/student | Chưa làm |
 | LB-01 | Egew | web + gateway, phối hợp Newton | 2 web có nhãn khác nhau, Round Robin, request tới cả hai | Chưa làm |
 | DEPLOY-01 | Newton điều phối; cả nhóm kiểm thử | nghiệm thu local | Docker Hub + EC2 + log kiểm thử từng phần | Chưa làm |
 | REPORT-01 | Cả nhóm | minh chứng từng task | mỗi người viết phần phụ trách, cùng ghép báo cáo 5 chương và video | Có dàn ý |
 
 ### Phối hợp và bàn giao
+
+#### Bàn giao DNS/Monitoring/Grafana — Demonwan, 14/11/2026
+
+Các kết quả dưới đây do Demonwan thực hiện và xác nhận trong phiên hướng dẫn; ảnh/log minh chứng đầy đủ chưa được lưu vào repository. Chưa đánh dấu nghiệm thu cuối cùng trong `ACCEPTANCE.md`.
+
+- DNS: bốn bản ghi web/app-backend/minio/keycloak trả đúng IP qua UDP/TCP trên EC2; container test dùng DNS `10.10.10.53` tải được HTML web trên local và EC2.
+- Monitoring: `up{job="web"}=1`, `nginx_up{job="web"}=1`; sau 20 request chủ động, counter local tăng 278 → 313, EC2 tăng 108 → 143. Healthcheck và scrape cũng tạo request nên không yêu cầu delta đúng 20.
+- Grafana: dashboard JSON gồm CPU/RAM/Network, Last 15 minutes, refresh 30s, datasource UID `prometheus`. EC2 hiển thị dữ liệu và dashboard còn sau khi recreate Grafana; ảnh dashboard sau recreate đã được cung cấp trong phiên hướng dẫn.
+- EC2 mới thử riêng sáu container: web, DNS, Node Exporter, Nginx Exporter, Prometheus, Grafana. Bản ghi DNS app/minio/keycloak đúng chưa chứng minh ba dịch vụ đó đang chạy. Chưa nghiệm thu tích hợp toàn hệ thống, Docker Hub hoặc load balancing.
+- Còn lại: bổ sung minh chứng local/EC2, viết báo cáo/video và kiểm thử lại khi tích hợp cụm đầy đủ với Newton.
+
+Từ gốc repository, tạo `.env` riêng rồi dùng cả hai file Compose để dựng phần này:
+
+```bash
+docker compose -f docker-compose.yml -f monitoring-prometheus-server/compose.web-metrics.yml config --quiet
+docker compose -f docker-compose.yml -f monitoring-prometheus-server/compose.web-metrics.yml up -d --build web-frontend-server internal-dns-server monitoring-node-exporter-server monitoring-web-exporter-server monitoring-prometheus-server monitoring-grafana-dashboard-server
+```
+
+Trên EC2 dùng `sudo` nếu tài khoản chưa có quyền Docker. Giao diện giữ loopback và truy cập qua SSH tunnel: cổng local 13000 → EC2 3000, local 19090 → EC2 9090. Không commit `.env` hoặc private key. Khi tích hợp LB, thêm override của LB theo README gateway.
+
+#### Phối hợp chung
 
 - **Demonwan:** phụ trách Prometheus, Grafana và DNS; thống nhất endpoint `stub_status` của web với Egew trước khi cấu hình Nginx Exporter.
 - **Egew:** phụ trách blog, MinIO và load balancing; chuẩn bị avatar, phối hợp cả nhóm lấy PDF báo cáo để upload vào `documents`.

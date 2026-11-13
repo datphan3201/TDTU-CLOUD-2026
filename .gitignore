@@ -6,6 +6,7 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .DS_Store
+*.pem
 object-storage-server/uploads/*
 !object-storage-server/uploads/.gitkeep
 docs/evidence/**/*

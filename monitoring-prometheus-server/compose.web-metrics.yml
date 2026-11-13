@@ -1,0 +1,17 @@
+# Chạy cùng -f docker-compose.yml ở đầu; đường dẫn được tính từ gốc repo.
+services:
+  monitoring-web-exporter-server:
+    image: nginx/nginx-prometheus-exporter:1.5.1
+    container_name: monitoring-web-exporter-server
+    restart: unless-stopped
+    command: ["--nginx.scrape-uri=http://web-frontend-server:8082/stub_status"]
+    depends_on:
+      web-frontend-server:
+        condition: service_healthy
+    networks:
+      cloud-net:
+        ipv4_address: 10.10.10.62
+
+  monitoring-prometheus-server:
+    volumes:
+      - ./monitoring-prometheus-server/prometheus.web.yml:/etc/prometheus/prometheus.yml:ro

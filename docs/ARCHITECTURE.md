@@ -14,6 +14,8 @@ flowchart LR
         dns[Bind9 :53]
         storage[(MinIO :9000 / Console :9001)]
         prom[Prometheus :9090] --> node[Node Exporter :9100]
+        prom --> exporter[Nginx Exporter :9113]
+        exporter -->|stub_status :8082| web
         grafana[Grafana :3000] --> prom
     end
     browser -->|cổng riêng qua localhost / SSH tunnel| storage
@@ -35,9 +37,12 @@ Nét đứt là tích hợp còn TODO. DNS Bind9 phục vụ zone riêng; Docker
 | monitoring-node-exporter-server | 10.10.10.61 | 9100 |
 | monitoring-grafana-dashboard-server | 10.10.10.70 | 3000 |
 | api-gateway-proxy-server | 10.10.10.80 | 80 |
-| Dự kiến web thứ hai / web exporter | .11 / .62 | 80 / 9113; chưa tạo |
+| monitoring-web-exporter-server (override monitoring) | 10.10.10.62 | 9113 nội bộ |
+| Dự kiến web thứ hai | 10.10.10.11 | 80; chưa tạo |
 
 IP tĩnh dùng để bản ghi DNS của bài lab trỏ đúng container. Các kết nối ứng dụng vẫn dùng **tên service**, không hardcode IP. Một vai trò monitoring có Node Exporter hỗ trợ; thêm web exporter và bản sao web sẽ tăng số container lên 12 nhưng vẫn giữ 9 vai trò.
+
+MON-01 được bật bằng `monitoring-prometheus-server/compose.web-metrics.yml` cùng file Compose nền. Override thêm Nginx Exporter và thay cấu hình Prometheus bằng `prometheus.web.yml` (job `node`, `web`, `prometheus`). Sơ đồ exporter áp dụng khi bật override; cổng 8082/9113 không publish ra host. Zone DNS có bốn bản ghi web/app-backend/minio/keycloak tương ứng IP trong bảng.
 
 ## Hợp đồng HTTP
 
@@ -73,6 +78,8 @@ IP tĩnh dùng để bản ghi DNS của bài lab trỏ đúng container. Các k
 Keycloak có `KC_HTTP_RELATIVE_PATH=/auth`, gateway giữ nguyên prefix. Cách này theo [hướng dẫn reverse proxy của Keycloak](https://www.keycloak.org/server/reverseproxy). Cổng 8081 dành cho kiểm tra trực tiếp; giao diện sẽ dùng URL canonical ở cổng gateway.
 
 ## Giới hạn quan sát
+
+Root mount của Node Exporter dùng `/:/host/root:ro`, bỏ bind propagation `rslave` để chạy được trên Docker Desktop. Trên Linux, cấu hình này không tự truyền các mount mới từ host vào root mount của container; recreate exporter nếu cần cập nhật chúng.
 
 Node Exporter cung cấp số liệu máy Linux, không tự cung cấp CPU/RAM từng container. Network mặc định thuộc namespace container exporter vì bài yêu cầu chung `cloud-net`; ghi rõ giới hạn khi thuyết trình. Muốn metrics network host chính xác trên EC2, thiết kế lại exporter dùng host network hoặc bổ sung collector phù hợp; metrics từng container cần cAdvisor hoặc giải pháp khác. Không gọi `node_*` là số liệu từng service.
 
