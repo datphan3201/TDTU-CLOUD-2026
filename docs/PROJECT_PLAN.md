@@ -21,11 +21,11 @@ Phân công đã thống nhất ngày 09/11/2026. Ngày 14/11/2026 đã kiểm t
 | APP-01 | Newton | INT-00 | /student trả đúng 5 sinh viên | Đạt tích hợp local 14/11; API trực tiếp/qua gateway cùng dữ liệu |
 | DB-01 | Newton | INT-00 | migration studentdb, 3 bản ghi, quyền SELECT | Đạt tích hợp local 14/11: 3 dòng, app user SELECT được; persistence đã kiểm tra 12/11 |
 | APP-02 (tích hợp tùy chọn) | Newton | DB-01 | /students-db đọc DB thật | Đạt tích hợp local 14/11; ca DB lỗi và phục hồi đã kiểm tra 12/11 |
-| AUTH-01 | Newton | API + gateway nền | realm, 2 user, client, /secure xác minh JWT | Đạt tích hợp local 14/11: 2 user token thật 200, token sai 401; cần ảnh Admin Console |
+| AUTH-01 | Newton | API + gateway nền | realm, 2 user, client, /secure xác minh JWT | Đạt local và EC2: 2 user token thật 200, token sai 401; đã chụp Admin Console qua HTTPS tunnel |
 | OBJ-01 | Egew | INT-00 | bucket/avatar/PDF + test tải lại | **Chưa đạt trên cụm local hiện tại**: chỉ có bucket demo; thiếu profile-pics/avatar.jpg và PDF documents. Biên bản local 10/11 là kết quả môi trường trước đó |
 | DNS-01 | Demonwan | IP đã chốt | dig 4 bản ghi khớp IP thực | Đạt tích hợp local 14/11: 4 bản ghi đúng qua UDP/TCP và web truy cập được qua DNS lab; cần ảnh/log bàn giao |
 | MON-01 | Demonwan | web nền | node UP, web exporter UP, nginx_up=1, request counter tăng | Đạt tích hợp local 14/11 với override monitoring: node/web UP, nginx_up=1, counter tăng; cần ảnh/log bàn giao |
-| GRAF-01 | Demonwan | node metrics | System Health of MSSV: CPU/RAM/Network + JSON export | Đạt kiểm tra dữ liệu local 14/11: dashboard/datasource nạp, 3 query có dữ liệu; cần ảnh 3 panel để nghiệm thu |
+| GRAF-01 | Demonwan | node metrics | System Health of MSSV: CPU/RAM/Network + JSON export | Đạt dữ liệu local và EC2, đã chụp ảnh dashboard đủ ba panel trên EC2 |
 | GW-01 | Newton | APP-01 | /student/ trả cùng dữ liệu /api/student | Đạt tích hợp local 14/11 khi bật cả LB và monitoring |
 | LB-01 | Egew | web + gateway, phối hợp Newton | 2 web có nhãn khác nhau, Round Robin, request tới cả hai | Đạt tích hợp local 14/11: 12 request phân phối 6/6 khi bật cả LB và monitoring; cần ảnh/log bàn giao |
 | DEPLOY-01 | Newton điều phối; cả nhóm kiểm thử | nghiệm thu local | Docker Hub + EC2 + log kiểm thử từng phần | Đã dựng 12 container trên EC2, xác minh 3 image có RepoDigest, public web/API/auth, smoke 11/11 và Newton 18/18; còn ảnh UI, persistence và dữ liệu OBJ-01 trước nghiệm thu cuối |

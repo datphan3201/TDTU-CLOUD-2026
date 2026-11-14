@@ -2,7 +2,7 @@
 
 Hai file `reports/BAO_CAO_CUOI_KY_VI_DRAFT.docx` và `reports/MYMINICLOUD_FINAL_REPORT_EN.docx` cùng có 22 vị trí `[CHÈN ẢNH …]`. Ảnh trong thư mục này lấy từ EC2 đang chạy hoặc source hiện tại. Ảnh chụp trình duyệt tự động chỉ chứa nội dung trang, không chứa thanh địa chỉ; nếu mẫu nộp bắt buộc thấy URL, mở đúng trang trong trình duyệt của bạn và chụp lại cùng thanh địa chỉ.
 
-Đã tạo hai bản sao Word có ảnh: `reports/BAO_CAO_CUOI_KY_VI_WITH_EVIDENCE.docx` và `reports/MYMINICLOUD_FINAL_REPORT_EN_WITH_EVIDENCE.docx`. Mỗi bản đã thay đúng 10 placeholder bằng 18 ảnh và giữ nguyên 12 placeholder còn thiếu. Chú thích Hình/Figure vẫn nằm ngay sau ảnh. Hai bản gốc chưa bị sửa.
+Đã tạo hai bản sao Word có ảnh: `reports/BAO_CAO_CUOI_KY_VI_WITH_EVIDENCE.docx` và `reports/MYMINICLOUD_FINAL_REPORT_EN_WITH_EVIDENCE.docx`. Mỗi bản đã thay đúng 11 placeholder bằng 22 ảnh và giữ nguyên 11 placeholder còn thiếu. Chú thích Hình/Figure vẫn nằm ngay sau ảnh. Hai bản gốc chưa bị sửa.
 
 | Mã ảnh | Nơi lấy | Hiện có / việc còn cần |
 |---|---|---|
@@ -16,7 +16,7 @@ Hai file `reports/BAO_CAO_CUOI_KY_VI_DRAFT.docx` và `reports/MYMINICLOUD_FINAL_
 | WEB_POSTS | `/blog/blog1.html`, `blog2.html`, `blog3.html` | 3 ảnh `ec2-WEB_POSTS-blog*.png` gồm toàn trang. |
 | API_JSON | `http://18.138.102.233/api/student` | `ec2-API_JSON.png` thể hiện 5 sinh viên. |
 | DB_STUDENTS | EC2 terminal: `DESCRIBE studentdb.students` và `SELECT`; đối chiếu `/api/students-db` | Có `ec2-DB_STUDENTS-api.png` và log `ec2-newton-2026-11-14.txt`; cần chụp schema/3 dòng trong terminal. |
-| AUTH_REALM | Keycloak Admin Console → realm `realm_523H0124_523H0177_523H0172` → Users/Clients | Chưa chụp được UI: realm `master` yêu cầu HTTPS, public gateway hiện chỉ có HTTP. Cần cấu hình HTTPS cho Admin Console hoặc dùng log Admin API làm minh chứng thay thế. |
+| AUTH_REALM | Keycloak Admin Console qua SSH tunnel `https://localhost:18443/auth/admin/` → realm `realm_523H0124_523H0177_523H0172` → Users/Clients | Đã chụp `ec2-AUTH_REALM-users.png`, `-clients.png`, `-client-grants.png`, `-audience-mapper.png`; không hiện mật khẩu/token. |
 | AUTH_TOKEN | EC2 terminal: `python3 scripts/check-newton.py` | Log `docs/evidence/00-integration/ec2-newton-2026-11-14.txt` đạt 18/18; ảnh `ec2-AUTH_TOKEN-no-token.png` chỉ chứng minh 401, chưa đủ. Cần chụp terminal có cả token đúng 200 và token sai 401, không hiện raw token. |
 | STORAGE_BUCKETS | MinIO Console qua SSH tunnel, `http://127.0.0.1:19001/browser` | `ec2-STORAGE_BUCKETS.png` cho thấy 3 bucket, nhưng `profile-pics` và `documents` hiện trống; chưa phải ảnh nghiệm thu cuối. |
 | STORAGE_AVATAR | MinIO S3: `profile-pics/avatar.jpg`, truy cập ẩn danh | Chưa có avatar thật; cổng 9000 hiện chỉ bind loopback. Cần upload ảnh thật rồi kiểm tra chính sách và đường truy cập. |

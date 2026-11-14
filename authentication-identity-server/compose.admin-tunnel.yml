@@ -1,0 +1,22 @@
+# Optional private HTTPS access to the Keycloak Admin Console via an SSH tunnel.
+# Generate admin-tunnel-certs/cert.pem and key.pem on the EC2 host before starting.
+services:
+  authentication-identity-server:
+    environment:
+      KC_HOSTNAME_ADMIN: https://localhost:18443/auth
+
+  keycloak-admin-tunnel:
+    image: nginx:1.28-alpine
+    container_name: keycloak-admin-tunnel
+    restart: unless-stopped
+    depends_on:
+      authentication-identity-server:
+        condition: service_started
+    ports:
+      - "127.0.0.1:18443:443"
+    volumes:
+      - ./authentication-identity-server/admin-tunnel.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./authentication-identity-server/admin-tunnel-certs/cert.pem:/etc/nginx/tls/cert.pem:ro
+      - ./authentication-identity-server/admin-tunnel-certs/key.pem:/etc/nginx/tls/key.pem:ro
+    networks:
+      - cloud-net

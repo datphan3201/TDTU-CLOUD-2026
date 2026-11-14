@@ -34,6 +34,12 @@ EVIDENCE = {
         "ec2-WEB_POSTS-blog3.png",
     ],
     "API_JSON": ["ec2-API_JSON.png"],
+    "AUTH_REALM": [
+        "ec2-AUTH_REALM-users.png",
+        "ec2-AUTH_REALM-clients.png",
+        "ec2-AUTH_REALM-client-grants.png",
+        "ec2-AUTH_REALM-audience-mapper.png",
+    ],
     "PROM_TARGETS": ["ec2-PROM_TARGETS.png"],
     "PROM_NGINX": ["ec2-PROM_NGINX-up.png", "ec2-PROM_NGINX-requests.png"],
     "GRAFANA_HEALTH": ["ec2-GRAFANA_HEALTH.png"],

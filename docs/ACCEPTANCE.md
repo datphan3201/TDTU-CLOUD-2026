@@ -31,11 +31,11 @@ Kết quả EC2 của các dòng trên được ghi trong [biên bản tích h�
 | [x] | WEB-01 | 3 bài + ảnh + link về Home; trực tiếp/qua proxy | 3 bài + 3 ảnh HTTP 200 công khai; [biên bản EC2](EC2_INTEGRATION.md) |
 | [x] | APP-01 | `/api/student` trả 5 object đúng trường/kiểu | LOCAL_ACCEPTANCE.md, local-newton-check.txt |
 | [x] | DB-01 | schema studentdb.students + ít nhất 3 dòng | Migration + SQL đối chiếu + APP-02; LOCAL_ACCEPTANCE.md |
-| [x] | AUTH-01 | realm MSSV, 2 users, public client, token → secure | Admin API + token thật 200/401; claims sai dùng RSA fixture; bổ sung ảnh UI |
+| [x] | AUTH-01 | realm MSSV, 2 users, public client, token → secure | Admin UI qua HTTPS tunnel + token thật 200/401; [ảnh](../output/playwright/IMAGE_CHECKLIST.md) |
 | [ ] | OBJ-01 | avatar public, PDF bucket documents tải được | Bucket, URL, download |
 | [x] | DNS-01 | app-backend, minio, keycloak phân giải đúng | dig UDP/TCP trên EC2; [biên bản](EC2_INTEGRATION.md) |
 | [x] | MON-01 | web exporter UP, nginx_up=1, request counter tăng | Targets/PromQL local + EC2; [biên bản](EC2_INTEGRATION.md) |
-| [ ] | GRAF-01 | System Health of MSSV, CPU/RAM/Network | Ảnh 3 panel + JSON export |
+| [x] | GRAF-01 | System Health of MSSV, CPU/RAM/Network | [Ảnh ba panel](../output/playwright/ec2-GRAFANA_HEALTH.png) + `system-health.json` |
 | [x] | GW-01 | `/student/` bằng `/api/student` | Cấu hình nền/LB + JSON đối chiếu; LOCAL_ACCEPTANCE.md |
 | [x] | LB-01 | Hai web, Round Robin, trang có nhãn khác nhau | 8 request công khai phân phối 4/4; [biên bản](EC2_INTEGRATION.md) |
 

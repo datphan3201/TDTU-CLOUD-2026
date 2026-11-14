@@ -44,6 +44,36 @@ Mở `http://localhost/auth/admin/`, đăng nhập bằng admin trong `.env`, ch
 - Clients có flask-app, Client authentication Off, Direct access grants On.
 - Mapper flask-app-audience thêm audience flask-app vào access token.
 
+### Admin Console riêng qua HTTPS trên EC2
+
+Khi realm `master` để `sslRequired=external`, URL Admin Console qua public HTTP trả “HTTPS required”. Để xem UI quản trị mà không mở thêm cổng công khai, dùng override `compose.admin-tunnel.yml`. Override thêm Nginx TLS chỉ bind `127.0.0.1:18443` trên EC2 và đặt URL quản trị Keycloak là `https://localhost:18443/auth`; issuer của realm sinh viên vẫn là `PUBLIC_BASE_URL`.
+
+Trên EC2, tạo chứng chỉ tự ký chỉ cho localhost (private key bị Git ignore), sau đó chạy cùng **cả ba** file Compose hiện dùng và override mới:
+
+```bash
+mkdir -p authentication-identity-server/admin-tunnel-certs
+chmod 700 authentication-identity-server/admin-tunnel-certs
+openssl req -x509 -newkey rsa:2048 -sha256 -days 30 -nodes \
+  -keyout authentication-identity-server/admin-tunnel-certs/key.pem \
+  -out authentication-identity-server/admin-tunnel-certs/cert.pem \
+  -subj /CN=localhost -addext subjectAltName=DNS:localhost,IP:127.0.0.1
+chmod 600 authentication-identity-server/admin-tunnel-certs/key.pem
+docker compose -f docker-compose.yml \
+  -f api-gateway-proxy-server/compose.lb.yml \
+  -f monitoring-prometheus-server/compose.web-metrics.yml \
+  -f authentication-identity-server/compose.admin-tunnel.yml \
+  up -d --no-build authentication-identity-server keycloak-admin-tunnel
+python3 scripts/setup-keycloak-admin-tunnel.py
+```
+
+Trên **máy cá nhân**, giữ lệnh SSH này chạy (Termius cũng có thể tạo local port forward tương đương):
+
+```bash
+ssh -i /path/to/cloud.pem -L 18443:127.0.0.1:18443 ubuntu@18.138.102.233
+```
+
+Mở `https://localhost:18443/auth/admin/`, chấp nhận cảnh báo chứng chỉ tự ký của lab, đăng nhập bằng `KEYCLOAK_ADMIN` và `KEYCLOAK_ADMIN_PASSWORD` trong `.env` **trên EC2**, rồi chọn realm sinh viên. Không cần mở Security Group port 18443. Khi chứng chỉ hết hạn, tạo lại và restart riêng `keycloak-admin-tunnel`. Trên EC2, giữ override này trong `COMPOSE_FILE` nếu dùng lệnh `docker compose` không có cờ `-f`; nếu không, lần `up` sau có thể bỏ cấu hình Admin Console riêng.
+
 ```bash
 python3 scripts/check-newton.py
 ```
