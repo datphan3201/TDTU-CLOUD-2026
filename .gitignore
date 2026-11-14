@@ -14,3 +14,4 @@ docs/evidence/**/*
 !docs/evidence/**/
 !docs/evidence/**/.gitkeep
 !docs/evidence/README.md
+output/*.zip
