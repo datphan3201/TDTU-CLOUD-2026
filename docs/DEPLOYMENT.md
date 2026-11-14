@@ -38,6 +38,7 @@ PUBLIC_BASE_URL=http://203.0.113.10
 GATEWAY_BIND_ADDRESS=0.0.0.0
 GATEWAY_PORT=80
 LOCAL_BIND_ADDRESS=127.0.0.1
+MINIO_BIND_ADDRESS=127.0.0.1
 STUDENT_ID=12345678
 ```
 
@@ -74,6 +75,8 @@ ssh -i /path/to/key.pem \
 Mở Grafana `localhost:3000`, Prometheus `localhost:9090`, MinIO Console `localhost:9001`. Keycloak qua `http://PUBLIC_IP/auth/`. DNS kiểm thử trong SSH bằng `dig @127.0.0.1 -p 1053 ...`; tunnel SSH thường không chuyển UDP.
 
 Avatar “public object” nghĩa là không cần xác thực tại S3 endpoint; để URL `http://PUBLIC_IP:9000/...` truy cập từ Internet, cần publish riêng endpoint S3 9000 (bind + Security Group theo kế hoạch demo) hoặc bổ sung route/domain cho S3. Scaffold mặc định chỉ đưa web/API/auth ra gateway public. Nếu cần mọi console qua public IP theo cách demo của lớp, đặt bind từng cổng cần dùng và giới hạn Security Group theo IP người demo; ghi lại cấu hình đã chọn.
+
+Để mở riêng hai cổng MinIO trên EC2 mà giữ các dịch vụ khác ở loopback, đặt `MINIO_BIND_ADDRESS=0.0.0.0` trong `.env`, rồi chạy `docker compose up -d --no-build object-storage-server`. Giá trị này được áp dụng trực tiếp từ `docker-compose.yml`, nên không cần file Compose phụ và vẫn có hiệu lực ở lần `up` sau. Security Group phải cho phép TCP 9000 (S3 API) và TCP 9001 (Console) từ nguồn truy cập mong muốn. URL tương ứng là `http://PUBLIC_IP:9000/minio/health/live` và `http://PUBLIC_IP:9001/`. Hai URL dùng HTTP; chỉ dùng Console qua mạng công khai cho buổi demo có kiểm soát, hoặc đặt HTTPS trước khi dùng thường xuyên.
 
 ## 6. Nghiệm thu EC2
 

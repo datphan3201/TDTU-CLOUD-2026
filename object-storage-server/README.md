@@ -6,6 +6,8 @@
 
 MinIO cung cấp API S3 ở 9000 và Console ở 9001. Dữ liệu bền trong named volume `object-data`. `uploads/` chỉ là chỗ đặt tệp nguồn cục bộ, được gitignore; không tự đồng bộ vào bucket.
 
+Trên EC2, đặt `MINIO_BIND_ADDRESS=0.0.0.0` trong `.env` nếu cần truy cập hai cổng này bằng public IP; mặc định chúng chỉ bind `127.0.0.1`. Security Group cũng phải cho phép TCP 9000/9001 từ nguồn tương ứng. Xem [hướng dẫn triển khai](../docs/DEPLOYMENT.md#5-truy-cập-giao-diện-quản-trị-qua-ssh-tunnel).
+
 Image lab được build bằng Dockerfile từ mã nguồn chính thức, ghim tag `RELEASE.2025-04-22T22-12-26Z` để giữ giao diện quản lý bucket tương ứng bài hướng dẫn. Image cũ trên Docker Hub và Quay không còn tải được khi kiểm tra ngày 09/11/2026; không cần `docker login` để sửa lỗi này. Lần build đầu cần Internet để tải Go, mã nguồn và dependencies, và sẽ lâu hơn các image có sẵn. Khi đổi phiên bản phải kiểm tra lại thao tác Console; tham chiếu [release chính thức](https://github.com/minio/minio/releases/tag/RELEASE.2025-04-22T22-12-26Z). Ghi rõ đây là bản tự build trong báo cáo.
 
 ## Việc cần làm

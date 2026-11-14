@@ -121,8 +121,8 @@ services:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:?Tao .env tu .env.example}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?Tao .env tu .env.example}
     ports:
-      - "${LOCAL_BIND_ADDRESS:-127.0.0.1}:9000:9000"
-      - "${LOCAL_BIND_ADDRESS:-127.0.0.1}:9001:9001"
+      - "${MINIO_BIND_ADDRESS:-127.0.0.1}:9000:9000"
+      - "${MINIO_BIND_ADDRESS:-127.0.0.1}:9001:9001"
     volumes:
       - object-data:/data
     networks:
