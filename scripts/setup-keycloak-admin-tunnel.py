@@ -19,8 +19,8 @@ def main():
             "config", "--format", "json",
         ], cwd=ROOT, text=True))
         admin_url = config["services"]["authentication-identity-server"]["environment"].get("KC_HOSTNAME_ADMIN")
-    if not admin_url or not admin_url.startswith("https://localhost:"):
-        raise RuntimeError("Enable compose.admin-tunnel.yml before running this script")
+    if not admin_url or not admin_url.startswith("https://"):
+        raise RuntimeError("Enable compose.admin-tunnel.yml with an HTTPS admin URL")
     base, token = admin_session(config)
     realm_url = base + "/admin/realms/master"
     status, realm = request_json(realm_url, token=token)

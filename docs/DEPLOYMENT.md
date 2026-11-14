@@ -78,6 +78,8 @@ Avatar “public object” nghĩa là không cần xác thực tại S3 endpoint
 
 Để mở riêng hai cổng MinIO trên EC2 mà giữ các dịch vụ khác ở loopback, đặt `MINIO_BIND_ADDRESS=0.0.0.0` trong `.env`, rồi chạy `docker compose up -d --no-build object-storage-server`. Giá trị này được áp dụng trực tiếp từ `docker-compose.yml`, nên không cần file Compose phụ và vẫn có hiệu lực ở lần `up` sau. Security Group phải cho phép TCP 9000 (S3 API) và TCP 9001 (Console) từ nguồn truy cập mong muốn. URL tương ứng là `http://PUBLIC_IP:9000/minio/health/live` và `http://PUBLIC_IP:9001/`. Hai URL dùng HTTP; chỉ dùng Console qua mạng công khai cho buổi demo có kiểm soát, hoặc đặt HTTPS trước khi dùng thường xuyên.
 
+Nếu bài demo yêu cầu truy cập **mọi thành phần** trực tiếp từ máy khác, trên EC2 đặt `LOCAL_BIND_ADDRESS=0.0.0.0`, `MINIO_BIND_ADDRESS=0.0.0.0`, `ADMIN_BIND_ADDRESS=0.0.0.0` và `KEYCLOAK_ADMIN_URL=https://PUBLIC_IP:18443/auth`. Recreate cụm bằng `docker compose up -d --no-build`; tạo chứng chỉ Keycloak Admin có SAN public IP và chạy `python3 scripts/setup-keycloak-admin-tunnel.py`. Các cổng TCP cần mở trong Security Group: 80 (gateway), 8080/8086 (hai web), 8085 (API), 3307 (DB), 8081 (Keycloak), 9000/9001 (MinIO), 9100 (node exporter), 9113 (web exporter), 9090 (Prometheus), 3000 (Grafana), 18443 (Keycloak Admin). DNS dùng cả TCP và UDP 1053. Không mở cổng 8443/9000 nội bộ của container Keycloak: chúng không có host port. Chỉ mở bộ cổng này trong thời gian demo hoặc giới hạn Source theo IP máy truy cập; Console MinIO, Grafana và DB hiện chưa có TLS công khai.
+
 ## 6. Nghiệm thu EC2
 
 Trên EC2, dùng public URL cho các request qua gateway để kiểm tra discovery canonical:

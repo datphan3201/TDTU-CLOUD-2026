@@ -5,6 +5,8 @@ services:
     container_name: monitoring-web-exporter-server
     restart: unless-stopped
     command: ["--nginx.scrape-uri=http://web-frontend-server:8082/stub_status"]
+    ports:
+      - "${LOCAL_BIND_ADDRESS:-127.0.0.1}:9113:9113"
     depends_on:
       web-frontend-server:
         condition: service_healthy

@@ -74,6 +74,8 @@ ssh -i /path/to/cloud.pem -L 18443:127.0.0.1:18443 ubuntu@18.138.102.233
 
 Mở `https://localhost:18443/auth/admin/`, chấp nhận cảnh báo chứng chỉ tự ký của lab, đăng nhập bằng `KEYCLOAK_ADMIN` và `KEYCLOAK_ADMIN_PASSWORD` trong `.env` **trên EC2**, rồi chọn realm sinh viên. Không cần mở Security Group port 18443. Khi chứng chỉ hết hạn, tạo lại và restart riêng `keycloak-admin-tunnel`. Trên EC2, giữ override này trong `COMPOSE_FILE` nếu dùng lệnh `docker compose` không có cờ `-f`; nếu không, lần `up` sau có thể bỏ cấu hình Admin Console riêng.
 
+Nếu cần Admin Console trực tiếp bằng IP công khai, đặt `ADMIN_BIND_ADDRESS=0.0.0.0` và `KEYCLOAK_ADMIN_URL=https://PUBLIC_IP:18443/auth` trong `.env`. Tạo lại chứng chỉ với SAN chứa `IP:PUBLIC_IP`, chạy `docker compose up -d --no-build authentication-identity-server keycloak-admin-tunnel`, rồi chạy lại `python3 scripts/setup-keycloak-admin-tunnel.py`. Security Group phải cho phép TCP 18443. Chứng chỉ tự ký sẽ có cảnh báo trình duyệt; triển khai lâu dài nên dùng tên miền và chứng chỉ được tin cậy.
+
 ```bash
 python3 scripts/check-newton.py
 ```
