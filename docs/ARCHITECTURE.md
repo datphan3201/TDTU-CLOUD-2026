@@ -2,13 +2,14 @@
 
 ## Sơ đồ
 
-Bộ [5 sơ đồ Archify tương tác](diagrams/index.html) gồm tổng thể local, triển khai Docker, JWT mục tiêu, giám sát và load balancing mục tiêu. Các artifact Archify ghim snapshot trước khi triển khai task Newton; sơ đồ Mermaid và hợp đồng bên dưới đã cập nhật ngày 12/11/2026. Xem [ghi chú nguồn và cách tái tạo](diagrams/README.md).
+Bộ [5 sơ đồ Archify tương tác](diagrams/index.html) gồm tổng thể local, triển khai Docker, JWT mục tiêu, giám sát và load balancing mục tiêu. Các artifact Archify ghim snapshot trước khi triển khai task Newton; sơ đồ Mermaid bên dưới phản ánh cụm EC2 12 container ngày 14/11/2026. Xem [ghi chú nguồn và cách tái tạo](diagrams/README.md).
 
 ```mermaid
 flowchart LR
     browser[Trình duyệt / curl] --> gateway[Nginx Gateway :80]
     subgraph cloud-net [cloud-net 10.10.10.0/24]
-        gateway -->|/ và /blog/| web[Nginx Web :80]
+        gateway -->|/ và /blog/ Round Robin| web1[Nginx Web 1 :80]
+        gateway -->|/ và /blog/ Round Robin| web2[Nginx Web 2 :80]
         gateway -->|/api/ bỏ prefix| app[Flask :8081]
         gateway -->|/auth/ giữ prefix| auth[Keycloak :8080/auth]
         app -->|SELECT studentdb.students| db[(MariaDB :3306)]
@@ -17,7 +18,7 @@ flowchart LR
         storage[(MinIO :9000 / Console :9001)]
         prom[Prometheus :9090] --> node[Node Exporter :9100]
         prom --> exporter[Nginx Exporter :9113]
-        exporter -->|stub_status :8082| web
+        exporter -->|stub_status :8082| web1
         grafana[Grafana :3000] --> prom
     end
     browser -->|cổng riêng qua localhost / SSH tunnel| storage
