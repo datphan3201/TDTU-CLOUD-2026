@@ -12,7 +12,7 @@ Mục tiêu bàn giao là một hệ thống có thể dựng lại từ reposit
 
 ## Bảng nhận việc
 
-Phân công đã thống nhất ngày 09/11/2026. Ngày 14/11/2026 đã kiểm thử tích hợp local với cả override LB và monitoring: 12 container chạy, 9/10 mục mở rộng đạt chức năng; OBJ-01 còn thiếu bucket/avatar/PDF trên môi trường hiện tại. Xem [biên bản tích hợp local](LOCAL_INTEGRATION.md). Kết quả local không thay thế nghiệm thu trên EC2.
+Phân công đã thống nhất ngày 09/11/2026. Ngày 14/11/2026 đã kiểm thử tích hợp local với cả override LB và monitoring: 12 container chạy, 9/10 mục mở rộng đạt chức năng; OBJ-01 còn thiếu avatar/PDF thật. Cùng ngày đã dựng đủ 12 container và kiểm thử qua public gateway trên [EC2](EC2_INTEGRATION.md). Xem riêng [biên bản local](LOCAL_INTEGRATION.md).
 
 | Task | Phụ trách | Phụ thuộc | Sản phẩm bàn giao | Trạng thái |
 |---|---|---|---|---|
@@ -28,8 +28,8 @@ Phân công đã thống nhất ngày 09/11/2026. Ngày 14/11/2026 đã kiểm t
 | GRAF-01 | Demonwan | node metrics | System Health of MSSV: CPU/RAM/Network + JSON export | Đạt kiểm tra dữ liệu local 14/11: dashboard/datasource nạp, 3 query có dữ liệu; cần ảnh 3 panel để nghiệm thu |
 | GW-01 | Newton | APP-01 | /student/ trả cùng dữ liệu /api/student | Đạt tích hợp local 14/11 khi bật cả LB và monitoring |
 | LB-01 | Egew | web + gateway, phối hợp Newton | 2 web có nhãn khác nhau, Round Robin, request tới cả hai | Đạt tích hợp local 14/11: 12 request phân phối 6/6 khi bật cả LB và monitoring; cần ảnh/log bàn giao |
-| DEPLOY-01 | Newton điều phối; cả nhóm kiểm thử | nghiệm thu local | Docker Hub + EC2 + log kiểm thử từng phần | Chưa push image lên Docker Hub; chưa nghiệm thu toàn cụm trên EC2 |
-| REPORT-01 | Cả nhóm | minh chứng từng task | mỗi người viết phần phụ trách, cùng ghép báo cáo 5 chương và video | Có dàn ý, chưa có báo cáo hoàn chỉnh/video; cần bổ sung minh chứng |
+| DEPLOY-01 | Newton điều phối; cả nhóm kiểm thử | nghiệm thu local | Docker Hub + EC2 + log kiểm thử từng phần | Đã dựng 12 container trên EC2, xác minh 3 image có RepoDigest, public web/API/auth, smoke 11/11 và Newton 18/18; còn ảnh UI, persistence và dữ liệu OBJ-01 trước nghiệm thu cuối |
+| REPORT-01 | Cả nhóm | minh chứng từng task | mỗi người viết phần phụ trách, cùng ghép báo cáo 5 chương và video | Đã có `reports/BAO_CAO_CUOI_KY_VI_DRAFT.docx` và `reports/MYMINICLOUD_FINAL_REPORT_EN.docx` trên main; cần rà soát theo kết quả EC2 mới, bổ sung minh chứng và video |
 
 ### Phối hợp và bàn giao
 

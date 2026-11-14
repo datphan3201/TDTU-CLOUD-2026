@@ -1,0 +1,22 @@
+# Kiểm thử tích hợp EC2 — 14/11/2026
+
+Môi trường: Ubuntu 26.04 trên EC2 `t3.small`, IP công khai `18.138.102.233`, repository `main` tại commit `6e9d982` khi dựng cụm. Docker Compose chạy cả cấu hình nền, override LB và override web metrics: **12/12 container running**. URL demo: http://18.138.102.233/. Chỉ cổng gateway 80 công khai; cổng quản trị và dữ liệu giữ trên loopback.
+
+Trên EC2, `.env` đặt `PUBLIC_BASE_URL=http://18.138.102.233`, `GATEWAY_BIND_ADDRESS=0.0.0.0` và `COMPOSE_FILE=docker-compose.yml:api-gateway-proxy-server/compose.lb.yml:monitoring-prometheus-server/compose.web-metrics.yml`. Không lưu mật khẩu hoặc token vào repository. Security Group cho phép HTTP 80 từ `0.0.0.0/0` để demo.
+
+| Hạng mục | Kết quả thực tế |
+|---|---|
+| Nền tảng | Smoke test với realm ứng dụng **11/11 PASS**; network-check **10 service PASS**; DB migration và Keycloak setup thành công. |
+| Public web/API | Từ máy ngoài EC2: `/`, `/student/`, `/api/student`, `/api/students-db`, `/blog/` và discovery realm ứng dụng HTTP 200; `/api/secure` không token HTTP 401 như mong đợi. |
+| APP-01, DB-01, APP-02, AUTH-01, GW-01 | `python3 scripts/check-newton.py` **18/18 PASS** trên EC2 với public issuer: 5 sinh viên đúng kiểu, 3 dòng DB khớp SQL, hai user lấy token và gọi secure HTTP 200; token sai HTTP 401. |
+| WEB-01 | Cả 3 trang bài viết và 3 ảnh trả HTTP 200 qua public gateway. |
+| LB-01 | 8 HEAD request từ bên ngoài lần lượt trả header `X-Web-Instance` của web 1/web 2, phân phối 4/4. |
+| DNS-01 | Bốn tên web, app-backend, minio, keycloak trả đúng địa chỉ `10.10.10.x` qua UDP/TCP trên EC2. |
+| MON-01 | Prometheus trả `up{job="node"}=1`, `up{job="web"}=1`, `nginx_up{job="web"}=1`. |
+| GRAF-01 | Datasource Prometheus UID `prometheus` và dashboard `System Health of 523H0124_523H0177_523H0172` có trên Grafana EC2; cần ảnh ba panel để nghiệm thu giao diện. |
+| Storage | Đã tạo `demo`, `profile-pics`, `documents`; upload `demo/index.html` đúng 1530 byte. Policy public-read của `profile-pics` cho phép GET ẩn danh object thử; `documents` từ chối GET ẩn danh HTTP 403 và cho phép GET có chữ ký. Object thử đã xóa. |
+| Docker Hub | Ba image tùy chỉnh trên EC2 có RepoDigest: web `sha256:72d1a750…`, app `sha256:9dad9ca8…`, storage `sha256:64abc4db…`. |
+
+**Còn cần để nghiệm thu cuối:** avatar thật tại `profile-pics/avatar.jpg`, PDF báo cáo thật trong `documents`, ảnh giao diện Grafana/Admin Console và video; rà soát hai file báo cáo trong `reports/` theo kết quả EC2 này. Chưa kiểm tra persistence bằng recreate trên lần triển khai EC2 này; không suy diễn từ trạng thái container đang chạy. Endpoint S3 9000 hiện chỉ bind loopback nên URL avatar công khai từ Internet cần route/domain hoặc cấu hình publish riêng nếu đề yêu cầu truy cập trực tiếp từ ngoài EC2. Cụm `t3.small` có khoảng 2 GiB RAM, nên theo dõi bộ nhớ khi quay demo hoặc tải đồng thời.
+
+Log kiểm thử nằm trên EC2 tại `~/TDTU-CLOUD-2026/docs/evidence/00-integration/` với prefix `ec2-` (thư mục evidence bị Git ignore). Có thể truy cập phiên `tmux` bằng `tmux attach -t myminicloud`; các cửa sổ `shell`, `status`, `logs`. Phím `Ctrl-b d` để thoát mà giữ phiên chạy.

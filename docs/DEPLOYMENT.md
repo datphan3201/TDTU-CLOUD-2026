@@ -1,6 +1,6 @@
 # Docker Hub và AWS EC2 Ubuntu
 
-Thực hiện sau khi nghiệm thu local. Scaffold chưa tạo tài nguyên AWS, chưa push image và chưa triển khai EC2. Ghi lại mọi thay đổi môi trường để tái dựng được.
+Đã triển khai và kiểm thử tích hợp trên EC2 ngày 14/11/2026; xem [biên bản EC2](EC2_INTEGRATION.md). Các bước dưới đây dùng để tái dựng hoặc kiểm thử lại.
 
 ## 1. Xuất bản image tùy chỉnh
 
@@ -80,7 +80,7 @@ Avatar “public object” nghĩa là không cần xác thực tại S3 endpoint
 Trên EC2, dùng public URL cho các request qua gateway để kiểm tra discovery canonical:
 
 ```bash
-MINICLOUD_BASE_URL=http://203.0.113.10 bash scripts/smoke-test.sh
+MINICLOUD_BASE_URL=http://203.0.113.10 MINICLOUD_AUTH_REALM=realm_12345678 bash scripts/smoke-test.sh
 bash scripts/network-check.sh
 ```
 

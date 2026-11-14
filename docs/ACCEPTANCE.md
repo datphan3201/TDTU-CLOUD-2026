@@ -1,6 +1,6 @@
 # Ma trận nghiệm thu
 
-Đánh dấu sau khi kiểm thử thật, ghi ngày/môi trường và đường dẫn minh chứng. Chỉ các mục có kết quả thực tế mới được đánh dấu. Các task Newton đánh dấu bên dưới đạt chức năng local ngày 12/11/2026; xem [biên bản](../application-backend-server/LOCAL_ACCEPTANCE.md). Ngày 14/11/2026 đã kiểm thử tích hợp cả LB và monitoring; xem [kết quả local](LOCAL_INTEGRATION.md). Dấu `[ ]` ở các mục còn thiếu ảnh/log bàn giao hoặc dữ liệu demo không có nghĩa mã nguồn chưa được viết. Chưa nghiệm thu toàn hệ thống trên EC2.
+Đánh dấu sau khi kiểm thử thật, ghi ngày/môi trường và đường dẫn minh chứng. Chỉ các mục có kết quả thực tế mới được đánh dấu. Các task Newton đánh dấu bên dưới đạt chức năng local ngày 12/11/2026; xem [biên bản](../application-backend-server/LOCAL_ACCEPTANCE.md). Ngày 14/11/2026 đã kiểm thử tích hợp cả LB và monitoring trên [local](LOCAL_INTEGRATION.md) và [EC2](EC2_INTEGRATION.md). Dấu `[ ]` ở các mục còn thiếu ảnh/log bàn giao hoặc dữ liệu demo không có nghĩa mã nguồn chưa được viết. Nghiệm thu cuối còn thiếu dữ liệu storage thật, ảnh UI, video và báo cáo.
 
 ## Phần cơ bản — 5 điểm
 
@@ -17,8 +17,10 @@
 | [ ] | Gateway | `/`, `/api/hello`, `/auth/` | Web/API/auth qua cùng entrypoint |
 | [ ] | Kết nối mạng | `bash scripts/network-check.sh` | Ping được các service đang chạy |
 | [ ] | Yêu cầu chung | Compose config, inspect network/restart/mounts | cloud-net; tên/cổng; restart; dữ liệu bền |
-| [ ] | Docker Hub | pull image tùy chỉnh theo tag | Image tồn tại và dựng được |
-| [ ] | EC2 Ubuntu | Public URL và kiểm thử lại | Web/API public, dịch vụ khác kiểm thử trên EC2/tunnel |
+| [x] | Docker Hub | pull image tùy chỉnh theo tag | Ba image có RepoDigest trên EC2; [biên bản](EC2_INTEGRATION.md) |
+| [x] | EC2 Ubuntu | Public URL và kiểm thử lại | Web/API/auth công khai, smoke 11/11; [biên bản](EC2_INTEGRATION.md) |
+
+Kết quả EC2 của các dòng trên được ghi trong [biên bản tích hợp](EC2_INTEGRATION.md); checkbox còn để mở nếu cần thêm minh chứng UI, persistence hoặc bàn giao.
 
 `/auth/` có thể redirect 302/303 tùy phiên bản/trạng thái login; cần kiểm tra URL đích và discovery, không dựa duy nhất vào mã 302.
 
@@ -26,24 +28,24 @@
 
 | Đạt | Task | Kiểm thử bắt buộc | Minh chứng |
 |---|---|---|---|
-| [ ] | WEB-01 | 3 bài + ảnh + link về Home; trực tiếp/qua proxy | Ảnh blog và HTTP 200 |
+| [x] | WEB-01 | 3 bài + ảnh + link về Home; trực tiếp/qua proxy | 3 bài + 3 ảnh HTTP 200 công khai; [biên bản EC2](EC2_INTEGRATION.md) |
 | [x] | APP-01 | `/api/student` trả 5 object đúng trường/kiểu | LOCAL_ACCEPTANCE.md, local-newton-check.txt |
 | [x] | DB-01 | schema studentdb.students + ít nhất 3 dòng | Migration + SQL đối chiếu + APP-02; LOCAL_ACCEPTANCE.md |
 | [x] | AUTH-01 | realm MSSV, 2 users, public client, token → secure | Admin API + token thật 200/401; claims sai dùng RSA fixture; bổ sung ảnh UI |
 | [ ] | OBJ-01 | avatar public, PDF bucket documents tải được | Bucket, URL, download |
-| [ ] | DNS-01 | app-backend, minio, keycloak phân giải đúng | dig và zone file |
-| [ ] | MON-01 | web exporter UP, nginx_up=1, request counter tăng | Targets + PromQL |
+| [x] | DNS-01 | app-backend, minio, keycloak phân giải đúng | dig UDP/TCP trên EC2; [biên bản](EC2_INTEGRATION.md) |
+| [x] | MON-01 | web exporter UP, nginx_up=1, request counter tăng | Targets/PromQL local + EC2; [biên bản](EC2_INTEGRATION.md) |
 | [ ] | GRAF-01 | System Health of MSSV, CPU/RAM/Network | Ảnh 3 panel + JSON export |
 | [x] | GW-01 | `/student/` bằng `/api/student` | Cấu hình nền/LB + JSON đối chiếu; LOCAL_ACCEPTANCE.md |
-| [ ] | LB-01 | Hai web, Round Robin, trang có nhãn khác nhau | Chuỗi request/header + 2 trang |
+| [x] | LB-01 | Hai web, Round Robin, trang có nhãn khác nhau | 8 request công khai phân phối 4/4; [biên bản](EC2_INTEGRATION.md) |
 
 Đề có chỗ gọi “9 yêu cầu mở rộng”, nhưng bảng điểm thực tế có 10 mục gồm load balancing. Dùng đủ 10 mục để theo dõi. APP-02 `/students-db` được chuẩn bị thành task tích hợp riêng; đề mô tả kết nối Flask là tùy chọn trong phần DB nhưng có nêu URL, nên hoàn thành nếu hướng tới bài tích hợp đầy đủ.
 
 ### Tiến độ tích hợp local 14/11/2026
 
-**9/10 mục mở rộng đạt kiểm tra chức năng trên cụm 12 container:** WEB-01, APP-01, DB-01, AUTH-01, DNS-01, MON-01, GRAF-01, GW-01, LB-01. APP-02 tùy chọn cũng đạt. Các mục WEB-01, DNS-01, MON-01, GRAF-01 và LB-01 chưa đánh dấu nghiệm thu cuối vì cần bổ sung ảnh/log bàn giao; riêng GRAF-01 cần ảnh 3 panel. **OBJ-01 chưa đạt ở môi trường hiện tại:** thiếu bucket `profile-pics`, `documents`, avatar và PDF. Upload/download object thử trong `demo` thành công; object cũ `demo/index.html` không khớp file web hiện tại. Xem [biên bản chi tiết](LOCAL_INTEGRATION.md).
+**9/10 mục mở rộng đạt kiểm tra chức năng trên cụm 12 container:** WEB-01, APP-01, DB-01, AUTH-01, DNS-01, MON-01, GRAF-01, GW-01, LB-01. APP-02 tùy chọn cũng đạt. Trên EC2 đã kiểm tra lại các mục này qua URL công khai hoặc dịch vụ nội bộ, trừ ảnh UI GRAF-01. **OBJ-01 chưa đạt đầy đủ:** bucket/policy đã tạo trên EC2 nhưng còn thiếu avatar và PDF thật. Xem [biên bản local](LOCAL_INTEGRATION.md) và [EC2](EC2_INTEGRATION.md).
 
-Phần cơ bản: smoke test 11/11, mạng 10 service, MariaDB notes, DNS UDP/TCP, Prometheus và Grafana đã kiểm tra local; các dòng trong ma trận vẫn để mở nếu còn yêu cầu UI, persistence, Docker Hub hoặc EC2 chưa có minh chứng đầy đủ. Log local nằm trong `docs/evidence/00-integration/` và bị Git bỏ qua theo [quy ước minh chứng](evidence/README.md).
+Phần cơ bản: smoke test 11/11, mạng 10 service, MariaDB notes, DNS UDP/TCP, Prometheus và Grafana đã kiểm tra local; smoke 11/11 và URL công khai cũng đã kiểm tra trên EC2. Các dòng còn để mở nếu cần UI, persistence hoặc minh chứng bàn giao. Log kiểm thử nằm trong `docs/evidence/00-integration/` và bị Git bỏ qua theo [quy ước minh chứng](evidence/README.md).
 
 ## Ca lỗi cần kiểm chứng khi tích hợp
 

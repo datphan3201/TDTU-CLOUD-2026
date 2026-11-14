@@ -12,6 +12,7 @@ done
 gateway_url="${MINICLOUD_BASE_URL:-http://localhost}"
 gateway_url="${gateway_url%/}"
 service_host="${MINICLOUD_HOST:-127.0.0.1}"
+auth_realm="${MINICLOUD_AUTH_REALM:-master}"
 failures=0
 
 check_http() {
@@ -39,7 +40,7 @@ check_http 'Blog trực tiếp' "http://$service_host:8080/blog/"
 check_http 'Web qua gateway' "$gateway_url/"
 check_json 'API trực tiếp' "http://$service_host:8085/hello" '.message == "Hello from App Server!"'
 check_json 'API qua gateway' "$gateway_url/api/hello" '.message == "Hello from App Server!"'
-check_json 'Keycloak discovery qua gateway' "$gateway_url/auth/realms/master/.well-known/openid-configuration" '.issuer | endswith("/auth/realms/master")'
+check_json 'Keycloak discovery qua gateway' "$gateway_url/auth/realms/$auth_realm/.well-known/openid-configuration" ".issuer | endswith(\"/auth/realms/$auth_realm\")"
 check_http 'MinIO live' "http://$service_host:9000/minio/health/live"
 check_http 'Prometheus ready' "http://$service_host:9090/-/ready"
 check_json 'Node target UP' "http://$service_host:9090/api/v1/query?query=up%7Bjob%3D%22node%22%7D" '.status == "success" and (.data.result | length > 0 and all(.[]; .value[1] == "1"))'
