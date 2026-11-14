@@ -16,6 +16,8 @@ flowchart LR
         dns[Bind9 :53]
         storage[(MinIO :9000 / Console :9001)]
         prom[Prometheus :9090] --> node[Node Exporter :9100]
+        prom --> exporter[Nginx Exporter :9113]
+        exporter -->|stub_status :8082| web
         grafana[Grafana :3000] --> prom
     end
     browser -->|cổng riêng qua localhost / SSH tunnel| storage
@@ -38,11 +40,13 @@ APP-01, APP-02, AUTH-01 và GW-01 đã nghiệm thu chức năng local ngày 12/
 | monitoring-grafana-dashboard-server | 10.10.10.70 | 3000 |
 | api-gateway-proxy-server | 10.10.10.80 | 80 |
 | web-frontend-server2 (override LB) | 10.10.10.11 | 80; host 8086 để xem riêng, mặc định loopback |
-| Web exporter (override monitoring riêng) | 10.10.10.62 | 9113; không tự bật bởi LB |
+| monitoring-web-exporter-server (override monitoring) | 10.10.10.62 | 9113 nội bộ; không tự bật bởi LB |
 
 IP tĩnh dùng để bản ghi DNS của bài lab trỏ đúng container. Các kết nối ứng dụng vẫn dùng **tên service**, không hardcode IP. Một vai trò monitoring có Node Exporter hỗ trợ; thêm web exporter và bản sao web sẽ tăng số container lên 12 nhưng vẫn giữ 9 vai trò.
 
 MinIO được build từ mã nguồn upstream tag `RELEASE.2025-04-22T22-12-26Z` bằng `object-storage-server/Dockerfile`, thay cho image công khai không còn tải được. Image local mang tên `${DOCKERHUB_USERNAME}/myminicloud-storage:RELEASE.2025-04-22T22-12-26Z`; cổng, biến môi trường và volume giữ theo hợp đồng trên.
+
+MON-01 được bật bằng `monitoring-prometheus-server/compose.web-metrics.yml` cùng file Compose nền. Override thêm Nginx Exporter và thay cấu hình Prometheus bằng `prometheus.web.yml` (job `node`, `web`, `prometheus`). Sơ đồ exporter áp dụng khi bật override; cổng 8082/9113 không publish ra host. Zone DNS có bốn bản ghi web/app-backend/minio/keycloak tương ứng IP trong bảng.
 
 ## Hợp đồng HTTP
 
@@ -81,7 +85,7 @@ Keycloak có `KC_HTTP_RELATIVE_PATH=/auth`, gateway giữ nguyên prefix. Cách 
 
 ## Giới hạn quan sát
 
-Root filesystem mount của Node Exporter dùng `/:/host/root:ro` với propagation mặc định để chạy được cả khi `/` trên host không phải shared mount. Các mount mới trên host có thể cần recreate exporter để quan sát; chỉ dùng `rslave` khi host hỗ trợ.
+Root mount của Node Exporter dùng `/:/host/root:ro` với propagation mặc định để chạy được trên Docker Desktop và host có `/` không phải shared mount. Trên Linux, các mount mới có thể cần recreate exporter để được quan sát; chỉ dùng `rslave` khi host hỗ trợ.
 
 Node Exporter cung cấp số liệu máy Linux, không tự cung cấp CPU/RAM từng container. Network mặc định thuộc namespace container exporter vì bài yêu cầu chung `cloud-net`; ghi rõ giới hạn khi thuyết trình. Muốn metrics network host chính xác trên EC2, thiết kế lại exporter dùng host network hoặc bổ sung collector phù hợp; metrics từng container cần cAdvisor hoặc giải pháp khác. Không gọi `node_*` là số liệu từng service.
 

@@ -4,7 +4,7 @@
 
 ## Vai trò và phần đã có
 
-Grafana được provision datasource tên `Prometheus`, UID `prometheus`, URL nội bộ `http://monitoring-prometheus-server:9090`. Dashboard JSON đặt trong `dashboards/` được nạp vào folder MyMiniCloud. Chưa có dashboard cá nhân; dữ liệu UI lưu ở named volume `grafana-data`.
+Grafana được provision datasource tên `Prometheus`, UID `prometheus`, URL nội bộ `http://monitoring-prometheus-server:9090`. File `dashboards/system-health.json` cung cấp dashboard cá nhân CPU/RAM/Network trong folder MyMiniCloud, Last 15 minutes, refresh 30s. Dữ liệu UI lưu ở named volume `grafana-data`. Demonwan đã xác nhận có dữ liệu trên EC2 sau recreate; minh chứng đầy đủ còn bổ sung, xem `docs/PROJECT_PLAN.md`.
 
 ## Việc cần làm
 

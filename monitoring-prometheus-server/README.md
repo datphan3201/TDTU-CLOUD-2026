@@ -8,7 +8,7 @@ Prometheus scrape chính nó và Node Exporter, chu kỳ 15 giây. Node Exporter
 
 Node Exporter không đo từng container. Network metrics mặc định thuộc network namespace exporter vì giữ chung `cloud-net`; không dùng chúng để khẳng định lưu lượng toàn host. Khi cần mở rộng giám sát host network chính xác trên Linux, xem [hướng dẫn Node Exporter Docker](https://github.com/prometheus/node_exporter#docker) và ghi lại thay đổi kiến trúc.
 
-Mount `/host/root` mặc định chỉ đọc, dùng propagation mặc định để tương thích host có `/` không phải shared mount (nếu dùng `rslave` sẽ lỗi `path / is mounted on / but it is not a shared mount`). Những mount host thêm sau khi container chạy có thể không xuất hiện trong exporter; recreate exporter nếu cần quan sát chúng. Trên Linux đã cấu hình shared mounts, có thể dùng `ro,rslave` theo hướng dẫn upstream.
+Mount root dùng `/:/host/root:ro` với propagation mặc định để tương thích Docker Desktop và host có `/` không phải shared mount. Trên Linux, mount mới xuất hiện sau khi container khởi động có thể không được phản ánh trong root mount này; recreate exporter nếu cần quan sát chúng. Chỉ dùng `ro,rslave` trên host hỗ trợ.
 
 ## Kiểm chứng phần nền
 
@@ -25,13 +25,11 @@ Mở `http://localhost:9090/targets`, node phải **UP**. Truy vấn `node_cpu_s
 
 Nginx tĩnh ở cổng 80 không tự có Prometheus `/metrics`. Target `web-frontend-server:80` trong DOCX sẽ trả HTML/404 và không đạt yêu cầu. Dùng [NGINX Prometheus Exporter](https://github.com/nginx/nginx-prometheus-exporter) đọc stub_status nội bộ đã có ở cổng 8082.
 
-- [ ] Sao chép hai file mẫu thành file hoạt động:
+Hai file hoạt động `compose.web-metrics.yml` và `prometheus.web.yml` đã có trong repository; không cần sao chép lại từ mẫu. Kiểm tra và khởi động riêng phần monitoring:
 
 ```bash
-cp monitoring-prometheus-server/compose.web-metrics.yml.example monitoring-prometheus-server/compose.web-metrics.yml
-cp monitoring-prometheus-server/prometheus.web.yml.example monitoring-prometheus-server/prometheus.web.yml
 docker compose -f docker-compose.yml -f monitoring-prometheus-server/compose.web-metrics.yml config --quiet
-docker compose -f docker-compose.yml -f monitoring-prometheus-server/compose.web-metrics.yml up -d
+docker compose -f docker-compose.yml -f monitoring-prometheus-server/compose.web-metrics.yml up -d --build web-frontend-server monitoring-node-exporter-server monitoring-web-exporter-server monitoring-prometheus-server monitoring-grafana-dashboard-server
 ```
 
 - [ ] Đọc cấu hình exporter và job `web`, giải thích đường đi Nginx → stub_status → exporter → Prometheus.
