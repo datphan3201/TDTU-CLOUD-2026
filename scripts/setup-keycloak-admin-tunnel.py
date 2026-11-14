@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Point only the master realm login at the private HTTPS Admin Console."""
+"""Point only the master realm login at the configured HTTPS Admin Console."""
 
 import json
 import subprocess
@@ -28,13 +28,13 @@ def main():
         raise RuntimeError(f"Cannot read master realm (HTTP {status})")
     attributes = realm.setdefault("attributes", {})
     if attributes.get("frontendUrl") == admin_url:
-        print("PASS master realm already uses the private HTTPS admin URL")
+        print("PASS master realm already uses the configured HTTPS admin URL")
         return
     attributes["frontendUrl"] = admin_url
     status, _ = request_json(realm_url, method="PUT", data=realm, token=token)
     if status != 204:
         raise RuntimeError(f"Cannot update master realm frontend URL (HTTP {status})")
-    print("PASS master realm frontend URL set to private HTTPS admin URL")
+    print("PASS master realm frontend URL set to configured HTTPS admin URL")
 
 
 if __name__ == "__main__":

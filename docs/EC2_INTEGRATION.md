@@ -28,3 +28,9 @@ Log kiểm thử nằm trên EC2 tại `~/TDTU-CLOUD-2026/docs/evidence/00-integ
 ### MinIO public bind
 
 `MINIO_BIND_ADDRESS=0.0.0.0` trong `.env` trên EC2 làm hai cổng MinIO 9000/9001 bind vào mọi giao diện mạng, độc lập với `LOCAL_BIND_ADDRESS` của các dịch vụ còn lại. Thiết lập này thay cho file Compose phụ `compose.minio-console.yml` từng dùng tạm trên EC2. Cần inbound rules TCP 9000/9001 của Security Group để truy cập qua IP công khai; nếu chưa có rules, chỉ truy cập được bằng SSH tunnel.
+
+### Yêu cầu truy cập trực tiếp mọi thành phần
+
+Theo yêu cầu ngày 14/11/2026, EC2 hiện đặt `LOCAL_BIND_ADDRESS=0.0.0.0`, `MINIO_BIND_ADDRESS=0.0.0.0`, `ADMIN_BIND_ADDRESS=0.0.0.0` và `KEYCLOAK_ADMIN_URL=https://18.138.102.233:18443/auth`. Compose ánh xạ toàn bộ cổng dịch vụ ra host; Keycloak Admin có chứng chỉ HTTPS tự ký chứa public IP trong SAN. Đã kiểm tra lại `check-newton.py` và smoke test đều đạt, API/Console MinIO, Grafana, Prometheus, hai exporter, hai web, DNS TCP/UDP và Admin Console phản hồi trên EC2.
+
+**Trạng thái truy cập từ Internet:** kiểm tra TCP từ máy ngoài EC2 chỉ thấy 22 và 80 mở; TCP 3000, 3307, 8080, 8081, 8085, 8086, 9000, 9001, 9090, 9100, 9113, 1053 và 18443 timeout. Chưa thể xác nhận truy cập công khai cho các cổng này trước khi Security Group `sg-060b5ccd24925fb83` cho phép inbound. DNS còn cần UDP 1053. EC2 không có IAM role và máy thao tác không có AWS CLI credentials, nên thay đổi Security Group phải được thực hiện trong tài khoản AWS. Xem [danh sách cổng](DEPLOYMENT.md#5-truy-cập-giao-diện-quản-trị-qua-ssh-tunnel). Các dịch vụ quản trị/DB hiện dùng giao thức không có TLS hoặc chứng chỉ tự ký; chỉ nên giữ cổng mở trong phạm vi và thời gian demo cần thiết.
