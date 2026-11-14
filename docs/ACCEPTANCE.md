@@ -1,6 +1,6 @@
 # Ma trận nghiệm thu
 
-Đánh dấu sau khi kiểm thử thật, ghi ngày/môi trường và đường dẫn minh chứng. Chỉ các mục có kết quả thực tế mới được đánh dấu. Các task Newton đánh dấu bên dưới đạt chức năng local ngày 12/11/2026; xem [biên bản](../application-backend-server/LOCAL_ACCEPTANCE.md). Chưa nghiệm thu EC2; ảnh UI và video báo cáo cần bổ sung.
+Đánh dấu sau khi kiểm thử thật, ghi ngày/môi trường và đường dẫn minh chứng. Chỉ các mục có kết quả thực tế mới được đánh dấu. Các task Newton đánh dấu bên dưới đạt chức năng local ngày 12/11/2026; xem [biên bản](../application-backend-server/LOCAL_ACCEPTANCE.md). Ngày 14/11/2026 đã kiểm thử tích hợp cả LB và monitoring; xem [kết quả local](LOCAL_INTEGRATION.md). Dấu `[ ]` ở các mục còn thiếu ảnh/log bàn giao hoặc dữ liệu demo không có nghĩa mã nguồn chưa được viết. Chưa nghiệm thu toàn hệ thống trên EC2.
 
 ## Phần cơ bản — 5 điểm
 
@@ -38,6 +38,12 @@
 | [ ] | LB-01 | Hai web, Round Robin, trang có nhãn khác nhau | Chuỗi request/header + 2 trang |
 
 Đề có chỗ gọi “9 yêu cầu mở rộng”, nhưng bảng điểm thực tế có 10 mục gồm load balancing. Dùng đủ 10 mục để theo dõi. APP-02 `/students-db` được chuẩn bị thành task tích hợp riêng; đề mô tả kết nối Flask là tùy chọn trong phần DB nhưng có nêu URL, nên hoàn thành nếu hướng tới bài tích hợp đầy đủ.
+
+### Tiến độ tích hợp local 14/11/2026
+
+**9/10 mục mở rộng đạt kiểm tra chức năng trên cụm 12 container:** WEB-01, APP-01, DB-01, AUTH-01, DNS-01, MON-01, GRAF-01, GW-01, LB-01. APP-02 tùy chọn cũng đạt. Các mục WEB-01, DNS-01, MON-01, GRAF-01 và LB-01 chưa đánh dấu nghiệm thu cuối vì cần bổ sung ảnh/log bàn giao; riêng GRAF-01 cần ảnh 3 panel. **OBJ-01 chưa đạt ở môi trường hiện tại:** thiếu bucket `profile-pics`, `documents`, avatar và PDF. Upload/download object thử trong `demo` thành công; object cũ `demo/index.html` không khớp file web hiện tại. Xem [biên bản chi tiết](LOCAL_INTEGRATION.md).
+
+Phần cơ bản: smoke test 11/11, mạng 10 service, MariaDB notes, DNS UDP/TCP, Prometheus và Grafana đã kiểm tra local; các dòng trong ma trận vẫn để mở nếu còn yêu cầu UI, persistence, Docker Hub hoặc EC2 chưa có minh chứng đầy đủ. Log local nằm trong `docs/evidence/00-integration/` và bị Git bỏ qua theo [quy ước minh chứng](evidence/README.md).
 
 ## Ca lỗi cần kiểm chứng khi tích hợp
 

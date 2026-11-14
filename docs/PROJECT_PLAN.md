@@ -12,24 +12,24 @@ Mục tiêu bàn giao là một hệ thống có thể dựng lại từ reposit
 
 ## Bảng nhận việc
 
-Phân công đã thống nhất ngày 09/11/2026. Nhóm xác nhận đã hoàn thành yêu cầu cơ bản trên local; bước tiếp theo là các mục mở rộng. Chưa đặt thời hạn vì chưa chốt lịch nộp. Kết quả local không thay thế nghiệm thu trên EC2.
+Phân công đã thống nhất ngày 09/11/2026. Ngày 14/11/2026 đã kiểm thử tích hợp local với cả override LB và monitoring: 12 container chạy, 9/10 mục mở rộng đạt chức năng; OBJ-01 còn thiếu bucket/avatar/PDF trên môi trường hiện tại. Xem [biên bản tích hợp local](LOCAL_INTEGRATION.md). Kết quả local không thay thế nghiệm thu trên EC2.
 
 | Task | Phụ trách | Phụ thuộc | Sản phẩm bàn giao | Trạng thái |
 |---|---|---|---|---|
-| INT-00: cấu hình nền, .env, network | Cả nhóm | — | Compose validate, IP/cổng thống nhất | Hoàn thành local theo xác nhận của nhóm |
-| WEB-01 | Egew | INT-00 | 3 bài blog + ảnh + navigation | Đã có 3 bài blog, ảnh và điều hướng trên main; cần lưu minh chứng nghiệm thu |
-| APP-01 | Newton | INT-00 | /student trả đúng 5 sinh viên | Đạt local 12/11/2026; xem application-backend-server/LOCAL_ACCEPTANCE.md |
-| DB-01 | Newton | INT-00 | migration studentdb, 3 bản ghi, quyền SELECT | Đạt local 12/11/2026; migration lặp lại được, dữ liệu còn sau recreate |
-| APP-02 (tích hợp tùy chọn) | Newton | DB-01 | /students-db đọc DB thật | Đạt local 12/11/2026; UPDATE phản ánh ngay, DB lỗi 503 và tự phục hồi |
-| AUTH-01 | Newton | API + gateway nền | realm, 2 user, client, /secure xác minh JWT | Đạt chức năng local 12/11/2026; token thật 200/401, ca claims sai trong test RSA; bổ sung ảnh UI cho báo cáo |
-| OBJ-01 | Egew | INT-00 | bucket/avatar/PDF + test tải lại | Đạt chức năng local; xem object-storage-server/LOCAL_ACCEPTANCE.md; bổ sung ảnh minh chứng và nghiệm thu EC2 |
-| DNS-01 | Demonwan | IP đã chốt | dig 4 bản ghi khớp IP thực | Đã kiểm thử chức năng local/EC2 theo xác nhận Demonwan; chờ bổ sung minh chứng |
-| MON-01 | Demonwan | web nền | node UP, web exporter UP, nginx_up=1, request counter tăng | Đã kiểm thử chức năng local/EC2 theo xác nhận Demonwan; chờ bổ sung minh chứng |
-| GRAF-01 | Demonwan | node metrics | System Health of MSSV: CPU/RAM/Network + JSON export | Có JSON; đã kiểm thử EC2 và recreate theo xác nhận Demonwan; chờ bổ sung minh chứng |
-| GW-01 | Newton | APP-01 | /student/ trả cùng dữ liệu /api/student | Đạt local 12/11/2026; đã ghép và kiểm thử gateway nền + LB |
-| LB-01 | Egew | web + gateway, phối hợp Newton | 2 web có nhãn khác nhau, Round Robin, request tới cả hai | Đạt local với override LB; xem api-gateway-proxy-server/LB_LOCAL_ACCEPTANCE.md; đã ghép GW-01 ngày 12/11; chờ ghép monitoring và nghiệm thu EC2 |
-| DEPLOY-01 | Newton điều phối; cả nhóm kiểm thử | nghiệm thu local | Docker Hub + EC2 + log kiểm thử từng phần | Để giai đoạn sau theo yêu cầu nhóm ngày 12/11/2026; chưa push image/triển khai cloud |
-| REPORT-01 | Cả nhóm | minh chứng từng task | mỗi người viết phần phụ trách, cùng ghép báo cáo 5 chương và video | Có dàn ý |
+| INT-00: cấu hình nền, .env, network | Cả nhóm | — | Compose validate, IP/cổng thống nhất | Đạt tích hợp local 14/11: Compose config hợp lệ, 12/12 container chạy, kiểm tra mạng đạt |
+| WEB-01 | Egew | INT-00 | 3 bài blog + ảnh + navigation | Đạt chức năng local 14/11: 3 bài và 3 ảnh HTTP 200 trên hai web và gateway; cần ảnh minh chứng |
+| APP-01 | Newton | INT-00 | /student trả đúng 5 sinh viên | Đạt tích hợp local 14/11; API trực tiếp/qua gateway cùng dữ liệu |
+| DB-01 | Newton | INT-00 | migration studentdb, 3 bản ghi, quyền SELECT | Đạt tích hợp local 14/11: 3 dòng, app user SELECT được; persistence đã kiểm tra 12/11 |
+| APP-02 (tích hợp tùy chọn) | Newton | DB-01 | /students-db đọc DB thật | Đạt tích hợp local 14/11; ca DB lỗi và phục hồi đã kiểm tra 12/11 |
+| AUTH-01 | Newton | API + gateway nền | realm, 2 user, client, /secure xác minh JWT | Đạt tích hợp local 14/11: 2 user token thật 200, token sai 401; cần ảnh Admin Console |
+| OBJ-01 | Egew | INT-00 | bucket/avatar/PDF + test tải lại | **Chưa đạt trên cụm local hiện tại**: chỉ có bucket demo; thiếu profile-pics/avatar.jpg và PDF documents. Biên bản local 10/11 là kết quả môi trường trước đó |
+| DNS-01 | Demonwan | IP đã chốt | dig 4 bản ghi khớp IP thực | Đạt tích hợp local 14/11: 4 bản ghi đúng qua UDP/TCP và web truy cập được qua DNS lab; cần ảnh/log bàn giao |
+| MON-01 | Demonwan | web nền | node UP, web exporter UP, nginx_up=1, request counter tăng | Đạt tích hợp local 14/11 với override monitoring: node/web UP, nginx_up=1, counter tăng; cần ảnh/log bàn giao |
+| GRAF-01 | Demonwan | node metrics | System Health of MSSV: CPU/RAM/Network + JSON export | Đạt kiểm tra dữ liệu local 14/11: dashboard/datasource nạp, 3 query có dữ liệu; cần ảnh 3 panel để nghiệm thu |
+| GW-01 | Newton | APP-01 | /student/ trả cùng dữ liệu /api/student | Đạt tích hợp local 14/11 khi bật cả LB và monitoring |
+| LB-01 | Egew | web + gateway, phối hợp Newton | 2 web có nhãn khác nhau, Round Robin, request tới cả hai | Đạt tích hợp local 14/11: 12 request phân phối 6/6 khi bật cả LB và monitoring; cần ảnh/log bàn giao |
+| DEPLOY-01 | Newton điều phối; cả nhóm kiểm thử | nghiệm thu local | Docker Hub + EC2 + log kiểm thử từng phần | Chưa push image lên Docker Hub; chưa nghiệm thu toàn cụm trên EC2 |
+| REPORT-01 | Cả nhóm | minh chứng từng task | mỗi người viết phần phụ trách, cùng ghép báo cáo 5 chương và video | Có dàn ý, chưa có báo cáo hoàn chỉnh/video; cần bổ sung minh chứng |
 
 ### Phối hợp và bàn giao
 
@@ -41,7 +41,7 @@ Các kết quả dưới đây do Demonwan thực hiện và xác nhận trong p
 - Monitoring: `up{job="web"}=1`, `nginx_up{job="web"}=1`; sau 20 request chủ động, counter local tăng 278 → 313, EC2 tăng 108 → 143. Healthcheck và scrape cũng tạo request nên không yêu cầu delta đúng 20.
 - Grafana: dashboard JSON gồm CPU/RAM/Network, Last 15 minutes, refresh 30s, datasource UID `prometheus`. EC2 hiển thị dữ liệu và dashboard còn sau khi recreate Grafana; ảnh dashboard sau recreate đã được cung cấp trong phiên hướng dẫn.
 - EC2 mới thử riêng sáu container: web, DNS, Node Exporter, Nginx Exporter, Prometheus, Grafana. Bản ghi DNS app/minio/keycloak đúng chưa chứng minh ba dịch vụ đó đang chạy. Chưa nghiệm thu tích hợp toàn hệ thống, Docker Hub hoặc load balancing.
-- Còn lại: bổ sung minh chứng local/EC2, viết báo cáo/video và kiểm thử lại khi tích hợp cụm đầy đủ với Newton.
+- Sau bàn giao này, cụm đầy đủ đã được kiểm thử local ngày 14/11/2026; xem [biên bản tích hợp](LOCAL_INTEGRATION.md). Còn cần ảnh/log bàn giao, nghiệm thu toàn cụm EC2 và báo cáo/video.
 
 Từ gốc repository, tạo `.env` riêng rồi dùng cả hai file Compose để dựng phần này:
 

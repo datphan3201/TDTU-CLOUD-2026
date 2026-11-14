@@ -2,9 +2,9 @@
 
 Đọc [kế hoạch điều phối](docs/PROJECT_PLAN.md) trước khi chia việc. Mỗi server có một README mô tả đầu vào, việc cần làm, lệnh kiểm thử, tiêu chí hoàn thành và minh chứng cần nộp.
 
-## Trạng thái khung
+## Trạng thái hiện tại
 
-Đã có cấu hình khởi đầu cho 9 vai trò server, tương ứng **10 container** khi tính thêm Node Exporter. Web có Home/Blog mẫu; API có `/hello` và `/health`; MariaDB có bảng `notes`; DNS có bản ghi web; Grafana có datasource Prometheus. API sinh viên, database sinh viên, xác thực JWT và route `/student/` đã triển khai và nghiệm thu local ngày 12/11/2026; xem [biên bản Newton](application-backend-server/LOCAL_ACCEPTANCE.md). Trạng thái blog/storage/dashboard/LB theo kế hoạch từng người; chưa nghiệm thu cloud.
+Đã triển khai 9 vai trò server. Với override LB và monitoring, cụm có **12 container**. [Kiểm thử tích hợp local ngày 14/11/2026](docs/LOCAL_INTEGRATION.md) xác nhận 9/10 mục mở rộng đạt chức năng; **OBJ-01 chưa đạt trên môi trường hiện tại** vì thiếu bucket avatar/PDF. Còn phải bổ sung minh chứng, push image lên Docker Hub, nghiệm thu toàn cụm trên EC2 và hoàn thành báo cáo/video. Xem [ma trận nghiệm thu](docs/ACCEPTANCE.md) để phân biệt chức năng đã kiểm tra với mục đã đủ minh chứng.
 
 Đây là môi trường học tập theo DOCX, có Keycloak `start-dev` và các image ghim phiên bản cho lab. [Hướng dẫn EC2](docs/DEPLOYMENT.md) mô tả cách đưa lên máy Ubuntu và kiểm thử lại.
 
@@ -35,23 +35,24 @@ Tất cả lệnh trong tài liệu chạy từ **thư mục gốc repository**,
 
 ## Phân chia server
 
-| Vai trò | Thư mục / hướng dẫn | Cổng host → container | Phần cần hoàn thiện |
+| Vai trò | Thư mục / hướng dẫn | Cổng host → container | Tiến độ local |
 |---|---|---|---|
-| Web | [web-frontend-server](web-frontend-server/README.md) | 8080 → 80 | WEB-01: blog 3 bài, ảnh, liên kết |
-| API | [application-backend-server](application-backend-server/README.md) | 8085 → 8081 | APP-01: JSON; APP-02: DB; AUTH-01: JWT |
-| Database | [relational-database-server](relational-database-server/README.md) | 3306 → 3306 | DB-01: studentdb, students, quyền đọc |
-| Authentication | [authentication-identity-server](authentication-identity-server/README.md) | 8081 → 8080 | AUTH-01: realm, user, client, token |
-| Storage | [object-storage-server](object-storage-server/README.md) | 9000, 9001 | OBJ-01: avatar công khai, PDF |
-| DNS | [internal-dns-server](internal-dns-server/README.md) | 1053 → 53 TCP/UDP | DNS-01: 3 bản ghi mới |
-| Monitoring | [monitoring-prometheus-server](monitoring-prometheus-server/README.md) | 9090, Node Exporter 9100 | MON-01: metrics web qua exporter |
-| Dashboard | [monitoring-grafana-dashboard-server](monitoring-grafana-dashboard-server/README.md) | 3000 → 3000 | GRAF-01: CPU, RAM, Network |
-| Gateway | [api-gateway-proxy-server](api-gateway-proxy-server/README.md) | 80 → 80 | GW-01: /student/; LB-01: Round Robin |
+| Web | [web-frontend-server](web-frontend-server/README.md) | 8080 → 80 | WEB-01 đạt chức năng; cần ảnh minh chứng |
+| API | [application-backend-server](application-backend-server/README.md) | 8085 → 8081 | APP-01, APP-02 và JWT đạt chức năng |
+| Database | [relational-database-server](relational-database-server/README.md) | `${DB_HOST_PORT:-3306}` → 3306 (local kiểm thử: 3307) | DB-01 đạt chức năng |
+| Authentication | [authentication-identity-server](authentication-identity-server/README.md) | 8081 → 8080 | AUTH-01 đạt chức năng; cần ảnh UI |
+| Storage | [object-storage-server](object-storage-server/README.md) | 9000, 9001 | OBJ-01 chưa đạt: thiếu avatar/PDF trên môi trường hiện tại |
+| DNS | [internal-dns-server](internal-dns-server/README.md) | 1053 → 53 TCP/UDP | DNS-01 đạt chức năng; cần minh chứng bàn giao |
+| Monitoring | [monitoring-prometheus-server](monitoring-prometheus-server/README.md) | 9090, Node Exporter 9100 | MON-01 đạt với override; cần minh chứng bàn giao |
+| Dashboard | [monitoring-grafana-dashboard-server](monitoring-grafana-dashboard-server/README.md) | 3000 → 3000 | GRAF-01 có dữ liệu; cần ảnh 3 panel |
+| Gateway | [api-gateway-proxy-server](api-gateway-proxy-server/README.md) | 80 → 80 | GW-01 và LB-01 đạt với override LB |
 
 ## Tài liệu điều phối
 
 - [Kế hoạch và bảng nhận việc](docs/PROJECT_PLAN.md): thứ tự, phụ thuộc, bàn giao.
 - [Kiến trúc và hợp đồng tích hợp](docs/ARCHITECTURE.md): IP, route, dữ liệu, OIDC.
 - [Ma trận nghiệm thu](docs/ACCEPTANCE.md): yêu cầu cơ bản và 10 mục mở rộng.
+- [Kiểm thử tích hợp local](docs/LOCAL_INTEGRATION.md): kết quả ghép LB và monitoring ngày 14/11/2026.
 - [Deploy EC2 và Docker Hub](docs/DEPLOYMENT.md).
 - [Khung báo cáo](docs/REPORT_OUTLINE.md), [quy ước minh chứng](docs/evidence/README.md).
 
