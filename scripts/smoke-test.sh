@@ -59,7 +59,7 @@ else
 fi
 
 printf '\nSố kiểm tra thất bại: %s\n' "$failures"
-printf 'Cần kiểm tra thêm SQL, login, upload/download, dashboard và các task mở rộng theo docs/ACCEPTANCE.md.\n'
+printf 'Cần kiểm tra thêm SQL, login, upload/download và dashboard.\n'
 if (( failures > 0 )); then
   exit 1
 fi

@@ -10,8 +10,8 @@ authentication-identity-server/import/realm-*.json
 *.pem
 object-storage-server/uploads/*
 !object-storage-server/uploads/.gitkeep
-docs/evidence/**/*
-!docs/evidence/**/
-!docs/evidence/**/.gitkeep
-!docs/evidence/README.md
-output/*.zip
+docs/
+reports/
+output/
+*.md
+*.docx

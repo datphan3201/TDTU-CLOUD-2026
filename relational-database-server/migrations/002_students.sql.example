@@ -1,5 +1,5 @@
 -- TODO DB-01: sao chép thành 002_students.sql và hoàn thành.
--- Chạy migration theo README, kể cả khi database-data đã tồn tại.
+-- Chạy migration kể cả khi database-data đã tồn tại.
 CREATE DATABASE IF NOT EXISTS studentdb;
 USE studentdb;
 -- CREATE TABLE students (...);
